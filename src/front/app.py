@@ -3,6 +3,7 @@
 from tkinter import *
 from tkinter import ttk
 from turtle import bgcolor, color
+import matplotlib.pyplot as plt
 
 from src.back.pricer import *
 from src.front.window import WindowMain
