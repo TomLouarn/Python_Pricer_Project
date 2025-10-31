@@ -1,6 +1,6 @@
 # Pricer
 
-Ce dépôt propose un **pricer complet** structuré de manière claire et modulaire.  Deux approches coexistent : un back‑end moderne sous forme de package Python (`pricer`) et un front‑end graphique basé sur Tkinter qui réutilise une API héritée.  La structure est pensée pour faciliter la compréhension du code et son évolution dans le temps.
+Ce dépôt propose un **pricer complet** structuré de manière claire et modulaire.  Deux approches coexistent : un back‑end moderne sous forme de package Python (`pricer`) et un front‑end graphique basé sur Tkinter. La structure est pensée pour faciliter la compréhension du code et son évolution dans le temps.
 
 ## Contenu du projet
 
@@ -13,7 +13,7 @@ Le dossier `src/back` contient `pricer.py`, `equityOptionFunctions.py`, `currenc
 - **Fichiers racine** :
   - `requirements.txt` : dépendances nécessaires (numpy, pandas, scipy, matplotlib, tkinter…).
   - `setup.py` : script d’installation pour créer un package Python à partir de `finance_pricer`.
-  - `refonte_report.md` : rapport académique détaillant la refonte, les choix de conception et les justifications théoriques.
+  - `choix_conception.md` : rapport académique détaillant la refonte, les choix de conception et les justifications théoriques.
   - `README.md` (ce fichier) : guide de prise en main et de structure.
 
 ## Installation
@@ -42,7 +42,7 @@ cd src/front
 python app.py
 ```
 
-Une fenêtre s’ouvrira avec plusieurs onglets : vous pourrez pricer des options (avec calcul des greeks ou de la volatilité implicite), lancer des simulations Monte‑Carlo, évaluer une obligation et ses sensibilités, et valoriser un swap taux fixe/flottant.  L’interface repose encore sur l’API de `pricer.py` et des fonctions associées.
+Une fenêtre s’ouvrira avec plusieurs onglets : vous pourrez pricer des options (avec calcul des greeks ou de la volatilité implicite), lancer des simulations Monte‑Carlo, évaluer une obligation et ses sensibilités, et valoriser un swap taux fixe/flottant.
 
 ## Utilisation du back‑end
 
@@ -67,4 +67,4 @@ print("Prix:", results["price"])  # prix
 print("Delta:", results["delta"])  # delta
 ```
 
-L’API moderne est entièrement documentée et typée.  Consultez le fichier `refonte_report.md` pour comprendre les décisions de conception et les principes théoriques sous‑jacents.
+L’API moderne est entièrement documentée et typée.  Consultez le fichier `choix_conception.md` pour comprendre les décisions de conception et les principes théoriques sous‑jacents.
