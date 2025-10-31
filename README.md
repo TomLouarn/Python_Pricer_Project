@@ -21,7 +21,7 @@ Le dossier `src/back` contient `pricer.py`, `equityOptionFunctions.py`, `currenc
 1. Cloner le dépôt :
 
    ```bash
-   git clone <repository_url>
+   git clone <[repository_url](https://github.com/TomLouarn/Python_Pricer_Project.git)>
    cd pricer
    ```
 
