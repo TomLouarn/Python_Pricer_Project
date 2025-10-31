@@ -1,15 +1,13 @@
-# Refonte académique et justification des choix de conception
+# Justification des choix de conception
 
-Cette refonte vise à transformer un ensemble de scripts hétérogènes en un
-package Python structuré et extensible, apte à figurer sur un portfolio
-GitHub. L’objectif est double : fournir des outils de pricing
+L’objectif est double : fournir des outils de pricing
 fiables pour un desk delta one ou volatilité, et démontrer une
 capacité à appliquer des principes d’ingénierie logicielle.
 
 ## 1. Structuration en package
 
-Le nouveau projet est organisé comme un package Python installable
-`finance_pricer` (cf. arborescence ci‑dessous). Cette structuration
+Le projet est organisé comme un package Python installable
+`pricer` (cf. arborescence ci‑dessous). Cette structuration
 répond à plusieurs objectifs :
 
 1. **Isolation et réutilisabilité** : chaque module (options, obligations, swaps,
@@ -24,7 +22,7 @@ répond à plusieurs objectifs :
 Arborescence simplifiée :
 
 ```
-finance_pricer/
+pricer/
 ├── __init__.py
 ├── options.py        # Options européennes, américaines, asiatiques, barrières
 ├── bonds.py          # Obligations à taux fixe
@@ -196,7 +194,4 @@ Cette refonte offre une base solide mais perfectible :
   d’utilisation pour chaque module.
 - Réaliser un front‑end moderne (ex. Streamlit) utilisant ce
   package, illustrant votre maîtrise des stacks back/front.
-
-En suivant ces recommandations, vous disposerez d’un projet GitHub
-élegant et académique qui mettra en avant vos compétences en
-modélisation financière, programmation Python et ingénierie logicielle.
+  
