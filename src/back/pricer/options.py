@@ -1,6 +1,6 @@
 """
-Ce module reprend l’implémentation des options du package `finance_pricer`.
-Veuillez consulter `refonte_report.md` pour la justification détaillée
+Ce module reprend l’implémentation des options du package `pricer`.
+Veuillez consulter `choix_conception.md` pour la justification détaillée
 des choix de conception.
 """
 

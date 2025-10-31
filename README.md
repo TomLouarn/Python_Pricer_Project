@@ -22,7 +22,7 @@ Le dossier `src/back` contient `pricer.py`, `equityOptionFunctions.py`, `currenc
 
    ```bash
    git clone <repository_url>
-   cd finance_pricer
+   cd pricer
    ```
 
 2. Créer un environnement virtuel et installer les dépendances :
@@ -49,7 +49,7 @@ Une fenêtre s’ouvrira avec plusieurs onglets : vous pourrez pricer des optio
 Vous pouvez également utiliser directement les classes du package `pricer` pour écrire vos propres scripts ou notebooks.  Par exemple, pour pricer une option européenne :
 
 ```python
-from src.back.finance_pricer import EuropeanOption, OptionType
+from src.back.pricer import EuropeanOption, OptionType
 
 # Création d’une option européenne call
 opt = EuropeanOption(
