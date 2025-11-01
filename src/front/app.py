@@ -84,14 +84,15 @@ if __name__ == '__main__':
         price, standardDeviation, tableauSpots = option_calculation_tab2(ut2_tab2,stop2_tab2,vol2_tab2,rfr2_tab2,ot2_tab2,mt2_tab2,lif2_tab2,strp2_tab2,valueRB2_tab2,divy2_tab2,nts2_tab2,nos2_tab2,rans2_tab2,ov1_tab2,ov2_tab2,ov3_tab2)
         tab2.valuePrice_tab2.set(round(price,5))
         tab2.valueSD_tab2.set(round(standardDeviation,5))
-        
-        #à corriger j'ai dix charts ou lieu d'un de dix !!!!!!!!!!!!!!!!!!!!!!!!!
-        for i in range(min(nts2_tab2,10)):
-            plt.plot(tableauSpots[i]) 
-            plt.title('First Ten Simulation Trials')
-            plt.xlabel('Time')
-            plt.ylabel('Stock Price')
-            plt.show()
+
+        plt.figure()
+        for i in range(min(nts2_tab2, 10)):
+            plt.plot(tableauSpots[i])
+        plt.title('First Ten Simulation Trials')
+        plt.xlabel('Time')
+        plt.ylabel('Stock Price')
+        plt.show()
+
 
     ttk.Button(tab2,text = "CALCULATE", command=callback_option_calculation_tab2).grid(column = 0,row = 13,padx = 1,pady = 11)
 

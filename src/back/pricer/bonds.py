@@ -1,13 +1,10 @@
 """
 Module obligations pour le projet global.
-Cette version reprend la classe `FixedRateBond` présentée dans la refonte.
 """
 
 from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Tuple
-
 import numpy as np
 import pandas as pd
 import numpy_financial as npf

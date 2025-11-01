@@ -10,10 +10,7 @@ colonne 'GERMANY' est utilisée pour l'actualisation.
 """
 
 from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import Union, Optional
-
 import numpy as np
 import pandas as pd
 from scipy import interpolate
@@ -55,7 +52,7 @@ class ZeroCurve:
     def bump(self, bp: float) -> 'ZeroCurve':
         """Renvoie une nouvelle courbe avec un shift uniforme de bp (en %).
 
-        Exemple : bp=0.0001 (1 bp) ajoutera 0.01 % aux taux.
+        Exemple: bp=0.0001 (1bp) ajoutera 0.01% aux taux.
         """
         bumped = self.data.copy()
         bumped[self.ref_col] = self.data[self.ref_col] + bp * 100

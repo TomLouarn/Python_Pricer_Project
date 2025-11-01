@@ -4,13 +4,11 @@ Cette classe s'appuie sur `ZeroCurve` du module rates pour l'actualisation.
 """
 
 from __future__ import annotations
-
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 from typing import Tuple
-
 from .rates import ZeroCurve
 
 

@@ -10,12 +10,10 @@ modèle de Merton intègre des sauts de Poisson.
 """
 
 from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Tuple, Optional
-
 import numpy as np
-from scipy import stats  # type: ignore
+from scipy import stats
 import math
 
 
