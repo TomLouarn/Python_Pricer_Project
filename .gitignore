@@ -1,8 +1,15 @@
-.DS_Store
-.venv/
+# Fichiers Python
 __pycache__/
 *.pyc
-.vscode/
-.idea/
+*.pyo
+
+# Environnements virtuels
+.venv/
+venv/
+
+# Fichiers système macOS
 .DS_Store
+
+# Dossiers d’IDE
 .idea/
+.vscode/
