@@ -511,7 +511,7 @@ def putPriceAsian(spot, strp, vol, rfr, lif, avgt, avgs):
 
 
 def call_price_greeks_asian(spot, vol, rfr, lif, strp, avgt, avgs):
-    """Cette fonction calcule le prix et les grecques d'une option asiatique
+    """Cette fonction calcule le prix et les grecques d'une option d'achat asiatique
 
     INPUTS
     ----------------------------------------------------------------
@@ -555,40 +555,33 @@ def call_price_greeks_asian(spot, vol, rfr, lif, strp, avgt, avgs):
     return price, delta, gamma, vega, theta, rho
 
 
-def put_price_greeks_asian(spot, vol, rfr, life, strike, tsi, ca):  
-# Cette fonction renvoie le prix et les greeks d'une option de vente asiatique
-#
-# INPUTS
-#----------------------------------------------------------------
-# v1 : prix au comptant
-# v2 : volatilité
-# v3 : taux d'intérêt sans risque
-# v4 : maturité
-# v5 : prix d'exercice
-# v6 : temps depuis la création de l'option
-# v7 : moyenne actuelle du cours du sous-jacent
-#
-# OUTPUT
-#----------------------------------------------------------------
-#
-# Prix de l'option de vente asiatique et ses grecques
-#
-#----------------------------------------------------------------
+def put_price_greeks_asian(spot, vol, rfr, lif, strike, avgt, avgs):
+    """Cette fonction calcule le prix et les grecques d'une option de vente asiatique
+
+    INPUTS
+    ----------------------------------------------------------------
+    spot : prix au comptant
+    strp : prix d'exercice
+    vol : volatilité
+    rfr : taux d'intérêt sans risque
+    lif : maturité
+    avgt : temps depuis la création de l'option
+    avgs : moyenne actuelle du cours du sous-jacent"""
 
     spot2 = spot + 1 #spot augmentant de 1€
     spot3 = spot + 2 #spot augmentant de 2€
     vol2 = vol + 0.01 #volatilité augmentant de 1%
-    rfr2 = rfr + 0.01 #taux snas risque augmentant de 1%
-    life2 = life * (364/365) #maturité moins 1 jour
-    tsi2 = tsi * (366/365) #temps écoulé depuis la création + 1 jour
-    ca2 = ca  #moyenne actuelle du cours en jour + 1
+    rfr2 = rfr + 0.01 #taux sans risque augmentant de 1%
+    lif2 = lif * (364 / 365) #maturité moins 1 jour
+    avgt2 = avgt * (366 / 365) #temps écoulé depuis la création + 1 jour
+    avgs2 = avgs  #moyenne actuelle du cours en jour + 1
 
     #Prix du call au spot :
-    price = putPriceAsian(spot, strike, vol, rfr, life, tsi, ca)
+    price = putPriceAsian(spot, strike, vol, rfr, lif, avgt, avgs)
     #Prix du call au spot + 1 :
-    price2 = putPriceAsian(spot2, strike, vol, rfr, life, tsi, ca)
+    price2 = putPriceAsian(spot2, strike, vol, rfr, lif, avgt, avgs)
     #Prix du call au spot + 2 :
-    price3 = putPriceAsian(spot3, strike, vol, rfr, life, tsi, ca)
+    price3 = putPriceAsian(spot3, strike, vol, rfr, lif, avgt, avgs)
 
     #Delta du call au niveau du spot :
     delta = price2 - price
@@ -598,11 +591,11 @@ def put_price_greeks_asian(spot, vol, rfr, life, strike, tsi, ca):
     #Gamma
     gamma = delta2 - delta
     #Vega
-    vega = putPriceAsian(spot, strike, vol2, rfr, life, tsi, ca) - price
+    vega = putPriceAsian(spot, strike, vol2, rfr, lif, avgt, avgs) - price
     #Theta
-    theta = putPriceAsian(spot, strike, vol, rfr, life2, tsi2, ca2) - price
+    theta = putPriceAsian(spot, strike, vol, rfr, lif2, avgt2, avgs2) - price
     #Rho
-    rho = putPriceAsian(spot, strike, vol, rfr2, life, tsi, ca) - price
+    rho = putPriceAsian(spot, strike, vol, rfr2, lif, avgt, avgs) - price
 
     return price, delta, gamma, vega, theta, rho
 
@@ -610,74 +603,57 @@ def put_price_greeks_asian(spot, vol, rfr, life, strike, tsi, ca):
 ########################################################################################### Barrière Up and Out ############################################################################
 
 
-def call_price_greeks_barrier_up_and_out(spot, vol, rfr, life, strike, step, barrier):
+def call_price_greeks_barrier_up_and_out(spot, vol, rfr, lif, strike, step, barrier):
     #step nombre d'itérations
     spot2 = spot + 1 #spot augmentant de 1€
     spot3 = spot + 2 #spot augmentant de 2€
     vol2 = vol + 0.01 #volatilité augmentant de 1%
     rfr2 = rfr + 0.01 #taux snas risque augmentant de 1%
-    life2 = life * (364/365) #maturité moins 1 jour
+    lif2 = lif * (364 / 365) #maturité moins 1 jour
     #Prix du call au spot :
-    price = callPriceBarrierUpAndOut(spot, vol, rfr, life, strike, step, barrier)
+    price = callPriceBarrierUpAndOut(spot, vol, rfr, lif, strike, step, barrier)
     #Prix du call au spot + 1 :
-    price2 = callPriceBarrierUpAndOut(spot2, vol, rfr, life, strike, step, barrier)
+    price2 = callPriceBarrierUpAndOut(spot2, vol, rfr, lif, strike, step, barrier)
     #Prix du call au spot + 2 :
-    price3 = callPriceBarrierUpAndOut(spot3, vol, rfr, life, strike, step, barrier)
+    price3 = callPriceBarrierUpAndOut(spot3, vol, rfr, lif, strike, step, barrier)
     if price2 - price < 0:
         delta = -price / (barrier - spot)
     else:
-        delta = price2 - price 
+        delta = price2 - price
     gamma = (price3-price2)-(price2-price)
-    vega = callPriceBarrierUpAndOut(spot, vol2, rfr, life, strike, step, barrier) - price
-    theta = callPriceBarrierUpAndOut(spot, vol, rfr, life2, strike, step, barrier) - price
-    rho = callPriceBarrierUpAndOut(spot, vol, rfr2, life, strike, step, barrier) - price
-    return price, delta, gamma, vega, theta, rho 
+    vega = callPriceBarrierUpAndOut(spot, vol2, rfr, lif, strike, step, barrier) - price
+    theta = callPriceBarrierUpAndOut(spot, vol, rfr, lif2, strike, step, barrier) - price
+    rho = callPriceBarrierUpAndOut(spot, vol, rfr2, lif, strike, step, barrier) - price
+    return price, delta, gamma, vega, theta, rho
 
-def put_price_greeks_barrier_up_and_out(spot, vol, rfr, life, strike, step, barrier):
+def put_price_greeks_barrier_up_and_out(spot, vol, rfr, lif, strike, step, barrier):
     #step nombre d'itérations
     spot2 = spot + 1 #spot augmentant de 1€
     spot3 = spot + 2 #spot augmentant de 2€
     vol2 = vol + 0.01 #volatilité augmentant de 1%
     rfr2 = rfr + 0.01 #taux snas risque augmentant de 1%
-    life2 = life * (364/365) #maturité moins 1 jour
+    lif2 = lif * (364 / 365) #maturité moins 1 jour
     #Prix du call au spot :
-    price = putPriceBarrierUpAndOut(spot, vol, rfr, life, strike, step, barrier)
+    price = putPriceBarrierUpAndOut(spot, vol, rfr, lif, strike, step, barrier)
     #Prix du call au spot + 1 :
-    price2 = putPriceBarrierUpAndOut(spot2, vol, rfr, life, strike, step, barrier)
+    price2 = putPriceBarrierUpAndOut(spot2, vol, rfr, lif, strike, step, barrier)
     #Prix du call au spot + 2 :
-    price3 = putPriceBarrierUpAndOut(spot3, vol, rfr, life, strike, step, barrier)
+    price3 = putPriceBarrierUpAndOut(spot3, vol, rfr, lif, strike, step, barrier)
     #delta
     if price2 - price > 0:
         delta = price / (spot - barrier)
     else:
-        delta = price2 - price    
+        delta = price2 - price
     gamma = (price3-price2)-(price2-price)
-    vega = putPriceBarrierUpAndOut(spot, vol2, rfr, life, strike, step, barrier) - price
-    theta = putPriceBarrierUpAndOut(spot, vol, rfr, life2, strike, step, barrier) - price
-    rho = putPriceBarrierUpAndOut(spot, vol, rfr2, life, strike, step, barrier) - price
-    return price, delta, gamma, vega, theta, rho 
+    vega = putPriceBarrierUpAndOut(spot, vol2, rfr, lif, strike, step, barrier) - price
+    theta = putPriceBarrierUpAndOut(spot, vol, rfr, lif2, strike, step, barrier) - price
+    rho = putPriceBarrierUpAndOut(spot, vol, rfr2, lif, strike, step, barrier) - price
+    return price, delta, gamma, vega, theta, rho
 
-def callPriceBarrierUpAndOut(spot, vol, rfr, life, strike, step, barrier):
-#Cette fonction calcule le prix d'une option d'achat Barrier Up And Out
-# Utilisant la "Stretch Technique"
-#
-# INPUTS
-#----------------------------------------------------------------
-# spot    : prix au comptant
-# strike  : prix d'exercice
-# vol     : volatilité
-# rfr     : taux d'intérêt sans risque
-# life    : maturité
-# barrier : barrière
-# step    : nombre d'itérations
-#
-# OUTPUT
-#----------------------------------------------------------------
-# Prix de l'option d'achat Barrier Up And Out
-#
-#----------------------------------------------------------------
+def callPriceBarrierUpAndOut(spot, vol, rfr, lif, strike, step, barrier):
+    #Cette fonction calcule le prix d'une option d'achat Barrier Up And Out
 
-    timeStep = life / step
+    timeStep = lif / step
 
     # Work out lambda (nn)
     n = log(barrier / spot) / (vol * sqrt(timeStep))
@@ -704,7 +680,7 @@ def callPriceBarrierUpAndOut(spot, vol, rfr, life, strike, step, barrier):
     Stree = [0 * 1 for _ in range(2 * step + 1)]
     Stree[0] = spot * exp(-step * dx)
     exp_dx = exp(dx)
-    
+
     for i in range (1,2 * step + 1):
         Stree[i] = exp_dx * Stree[i - 1]
 
@@ -734,28 +710,11 @@ def callPriceBarrierUpAndOut(spot, vol, rfr, life, strike, step, barrier):
 
     return price
 
-def putPriceBarrierUpAndOut(spot, vol, rfr, life, strike, step, barrier):
-#Cette fonction calcule le prix d'une option de vente Barrier Up And Out
-# Utilisant la "Stretch Technique"
-#
-# INPUTS
-#----------------------------------------------------------------
-# spot    : prix au comptant
-# strike  : prix d'exercice
-# vol     : volatilité
-# rfr     : taux d'intérêt sans risque
-# life    : maturité
-# barrier : barrière
-# step    : nombre d'itérations
-#
-# OUTPUT
-#----------------------------------------------------------------
-#
-# Prix de l'option de vente Barrier Up And Out
-#
-#----------------------------------------------------------------
+def putPriceBarrierUpAndOut(spot, vol, rfr, lif, strike, step, barrier):
+    #Cette fonction calcule le prix d'une option de vente Barrier Up And Out
 
-    timeStep = life / step
+
+    timeStep = lif / step
 
     # Work out lambda (nn)
     n = log(barrier / spot) / (vol * sqrt(timeStep))
@@ -783,7 +742,7 @@ def putPriceBarrierUpAndOut(spot, vol, rfr, life, strike, step, barrier):
     Stree = [0 * 1 for _ in range(2 * step + 1)]
     Stree[0] = spot * exp(-step * dx)
     exp_dx = exp(dx)
-    
+
     for i in range (1,2 * step + 1):
         Stree[i] = exp_dx * Stree[i - 1]
 
@@ -817,72 +776,55 @@ def putPriceBarrierUpAndOut(spot, vol, rfr, life, strike, step, barrier):
 ########################################################################################### Barrière Down and Out ############################################################################
 
 
-def call_price_greeks_barrier_down_and_out(spot, vol, rfr, life, strike, step, barrier):
+def call_price_greeks_barrier_down_and_out(spot, vol, rfr, lif, strike, step, barrier):
     #step nombre d'itérations
     spot2 = spot + 1 #spot augmentant de 1€
     spot3 = spot + 2 #spot augmentant de 2€
     vol2 = vol + 0.01 #volatilité augmentant de 1%
     rfr2 = rfr + 0.01 #taux snas risque augmentant de 1%
-    life2 = life * (364/365) #maturité moins 1 jour
+    lif2 = lif * (364 / 365) #maturité moins 1 jour
     #Prix du call au spot :
-    price = callPriceBarrierDownAndOut(spot, vol, rfr, life, strike, step, barrier)
+    price = callPriceBarrierDownAndOut(spot, vol, rfr, lif, strike, step, barrier)
     #Prix du call au spot + 1 :
-    price2 = callPriceBarrierDownAndOut(spot2, vol, rfr, life, strike, step, barrier)
+    price2 = callPriceBarrierDownAndOut(spot2, vol, rfr, lif, strike, step, barrier)
     #Prix du call au spot + 2 :
-    price3 = callPriceBarrierDownAndOut(spot3, vol, rfr, life, strike, step, barrier)
+    price3 = callPriceBarrierDownAndOut(spot3, vol, rfr, lif, strike, step, barrier)
     if price2 - price < 0:
         delta = -price / (barrier - spot)
     else:
-        delta = price2 - price 
+        delta = price2 - price
     gamma = (price3-price2)-(price2-price)
-    vega = callPriceBarrierDownAndOut(spot, vol2, rfr, life, strike, step, barrier) - price
-    theta = callPriceBarrierDownAndOut(spot, vol, rfr, life2, strike, step, barrier) - price
-    rho = callPriceBarrierDownAndOut(spot, vol, rfr2, life, strike, step, barrier) - price
-    return price, delta, gamma, vega, theta, rho 
+    vega = callPriceBarrierDownAndOut(spot, vol2, rfr, lif, strike, step, barrier) - price
+    theta = callPriceBarrierDownAndOut(spot, vol, rfr, lif2, strike, step, barrier) - price
+    rho = callPriceBarrierDownAndOut(spot, vol, rfr2, lif, strike, step, barrier) - price
+    return price, delta, gamma, vega, theta, rho
 
-def put_price_greeks_barrier_down_and_out(spot, vol, rfr, life, strike, step, barrier):
+def put_price_greeks_barrier_down_and_out(spot, vol, rfr, lif, strike, step, barrier):
     #step nombre d'itérations
     spot2 = spot + 1 #spot augmentant de 1€
     spot3 = spot + 2 #spot augmentant de 2€
     vol2 = vol + 0.01 #volatilité augmentant de 1%
     rfr2 = rfr + 0.01 #taux snas risque augmentant de 1%
-    life2 = life * (364/365) #maturité moins 1 jour
+    lif2 = lif * (364 / 365) #maturité moins 1 jour
     #Prix du call au spot :
-    price = putPriceBarrierDownAndOut(spot, vol, rfr, life, strike, step, barrier)
+    price = putPriceBarrierDownAndOut(spot, vol, rfr, lif, strike, step, barrier)
     #Prix du call au spot + 1 :
-    price2 = putPriceBarrierDownAndOut(spot2, vol, rfr, life, strike, step, barrier)
+    price2 = putPriceBarrierDownAndOut(spot2, vol, rfr, lif, strike, step, barrier)
     #Prix du call au spot + 2 :
-    price3 = putPriceBarrierDownAndOut(spot3, vol, rfr, life, strike, step, barrier)
+    price3 = putPriceBarrierDownAndOut(spot3, vol, rfr, lif, strike, step, barrier)
     #delta
     if price2 - price > 0:
         delta = price / (spot - barrier)
     else:
-        delta = price2 - price    
+        delta = price2 - price
     gamma = (price3-price2)-(price2-price)
-    vega = putPriceBarrierDownAndOut(spot, vol2, rfr, life, strike, step, barrier) - price
-    theta = putPriceBarrierDownAndOut(spot, vol, rfr, life2, strike, step, barrier) - price
-    rho = putPriceBarrierDownAndOut(spot, vol, rfr2, life, strike, step, barrier) - price
-    return price, delta, gamma, vega, theta, rho 
+    vega = putPriceBarrierDownAndOut(spot, vol2, rfr, lif, strike, step, barrier) - price
+    theta = putPriceBarrierDownAndOut(spot, vol, rfr, lif2, strike, step, barrier) - price
+    rho = putPriceBarrierDownAndOut(spot, vol, rfr2, lif, strike, step, barrier) - price
+    return price, delta, gamma, vega, theta, rho
 
 def callPriceBarrierDownAndOut(spot, vol, rfr, life, strike, step, barrier):
-#Cette fonction calcule le prix d'une option d'achat Barrier Down And Out
-# Utilisant la "Stretch Technique"
-#
-# INPUTS
-#----------------------------------------------------------------
-# spot    : prix au comptant
-# strike  : prix d'exercice
-# vol     : volatilité
-# rfr     : taux d'intérêt sans risque
-# life    : maturité
-# barrier : barrière
-# step    : nombre d'itérations
-#
-# OUTPUT
-#----------------------------------------------------------------
-# Prix de l'option d'achat Barrier Down And Out
-#
-#----------------------------------------------------------------
+    #Cette fonction calcule le prix d'une option d'achat Barrier Down And Out
 
     timeStep = life / step
 
@@ -907,7 +849,7 @@ def callPriceBarrierDownAndOut(spot, vol, rfr, life, strike, step, barrier):
     p_d = discount * pd
     p_m = discount * pm
 
-   #Work out stock price
+    #Work out stock price
     Stree = [0 * 1 for _ in range(2 * step + 1)]
     Stree[0] = spot * exp(-step * dx)
     exp_dx = exp(dx)
@@ -942,24 +884,7 @@ def callPriceBarrierDownAndOut(spot, vol, rfr, life, strike, step, barrier):
     return price
 
 def putPriceBarrierDownAndOut(spot, vol, rfr, life, strike, step, barrier):
-#Cette fonction calcule le prix d'une option de vente Barrier Down And Out
-# Utilisant la "Stretch Technique"
-#
-# INPUTS
-#----------------------------------------------------------------
-# spot    : prix au comptant
-# strike  : prix d'exercice
-# vol     : volatilité
-# rfr     : taux d'intérêt sans risque
-# life    : maturité
-# barrier : barrière
-# step    : nombre d'itérations
-#
-# OUTPUT
-#----------------------------------------------------------------
-# Prix de l'option de vente Barrier Down And Out
-#
-#----------------------------------------------------------------
+    #Cette fonction calcule le prix d'une option de vente Barrier Down And Out
 
     timeStep = life / step
 
@@ -984,7 +909,7 @@ def putPriceBarrierDownAndOut(spot, vol, rfr, life, strike, step, barrier):
     p_d = discount * pd
     p_m = discount * pm
 
-   #Work out stock price
+    #Work out stock price
     Stree = [0 * 1 for _ in range(2 * step + 1)]
     Stree[0] = spot * exp(-step * dx)
     exp_dx = exp(dx)
@@ -1022,92 +947,62 @@ def putPriceBarrierDownAndOut(spot, vol, rfr, life, strike, step, barrier):
 ########################################################################################### Barrière Down and In ############################################################################
 
 
-def call_price_greeks_barrier_down_and_in(spot, vol, rfr, life, strike, barrier):
+def call_price_greeks_barrier_down_and_in(spot, vol, rfr, lif, strike, barrier):
     #step nombre d'itérations
     spot2 = spot + 1 #spot augmentant de 1€
     spot3 = spot + 2 #spot augmentant de 2€
     vol2 = vol + 0.01 #volatilité augmentant de 1%
     rfr2 = rfr + 0.01 #taux snas risque augmentant de 1%
-    life2 = life * (364/365) #maturité moins 1 jour
+    lif2 = lif * (364 / 365) #maturité moins 1 jour
     #Prix du call au spot :
-    price = callPriceBarrierDownAndIn(spot, vol, rfr, life, strike, barrier)
+    price = callPriceBarrierDownAndIn(spot, vol, rfr, lif, strike, barrier)
     #Prix du call au spot + 1 :
-    price2 = callPriceBarrierDownAndIn(spot2, vol, rfr, life, strike, barrier)
+    price2 = callPriceBarrierDownAndIn(spot2, vol, rfr, lif, strike, barrier)
     #Prix du call au spot + 2 :
-    price3 = callPriceBarrierDownAndIn(spot3, vol, rfr, life, strike, barrier)
-    delta = price2 - price 
+    price3 = callPriceBarrierDownAndIn(spot3, vol, rfr, lif, strike, barrier)
+    delta = price2 - price
     gamma = (price3-price2)-(price2-price)
-    vega = callPriceBarrierDownAndIn(spot, vol2, rfr, life, strike, barrier) - price
-    theta = callPriceBarrierDownAndIn(spot, vol, rfr, life2, strike, barrier) - price
-    rho = callPriceBarrierDownAndIn(spot, vol, rfr2, life, strike, barrier) - price
-    return price, delta, gamma, vega, theta, rho 
+    vega = callPriceBarrierDownAndIn(spot, vol2, rfr, lif, strike, barrier) - price
+    theta = callPriceBarrierDownAndIn(spot, vol, rfr, lif2, strike, barrier) - price
+    rho = callPriceBarrierDownAndIn(spot, vol, rfr2, lif, strike, barrier) - price
+    return price, delta, gamma, vega, theta, rho
 
-def put_price_greeks_barrier_down_and_in(spot, vol, rfr, life, strike, barrier):
+def put_price_greeks_barrier_down_and_in(spot, vol, rfr, lif, strike, barrier):
     #step nombre d'itérations
     spot2 = spot + 1 #spot augmentant de 1€
     spot3 = spot + 2 #spot augmentant de 2€
     vol2 = vol + 0.01 #volatilité augmentant de 1%
     rfr2 = rfr + 0.01 #taux snas risque augmentant de 1%
-    life2 = life * (364/365) #maturité moins 1 jour
+    lif2 = lif * (364 / 365) #maturité moins 1 jour
     #Prix du call au spot :
-    price = putPriceBarrierDownAndIn(spot, vol, rfr, life, strike, barrier)
+    price = putPriceBarrierDownAndIn(spot, vol, rfr, lif, strike, barrier)
     #Prix du call au spot + 1 :
-    price2 = putPriceBarrierDownAndIn(spot2, vol, rfr, life, strike, barrier)
+    price2 = putPriceBarrierDownAndIn(spot2, vol, rfr, lif, strike, barrier)
     #Prix du call au spot + 2 :
-    price3 = putPriceBarrierDownAndIn(spot3, vol, rfr, life, strike, barrier)
-    delta = price2 - price  
+    price3 = putPriceBarrierDownAndIn(spot3, vol, rfr, lif, strike, barrier)
+    delta = price2 - price
     gamma = (price3-price2)-(price2-price)
-    vega = putPriceBarrierDownAndIn(spot, vol2, rfr, life, strike, barrier) - price
-    theta = putPriceBarrierDownAndIn(spot, vol, rfr, life2, strike, barrier) - price
-    rho = putPriceBarrierDownAndIn(spot, vol, rfr2, life, strike, barrier) - price
-    return price, delta, gamma, vega, theta, rho 
+    vega = putPriceBarrierDownAndIn(spot, vol2, rfr, lif, strike, barrier) - price
+    theta = putPriceBarrierDownAndIn(spot, vol, rfr, lif2, strike, barrier) - price
+    rho = putPriceBarrierDownAndIn(spot, vol, rfr2, lif, strike, barrier) - price
+    return price, delta, gamma, vega, theta, rho
 
-def callPriceBarrierDownAndIn(spot, vol, rfr, life, strike, barrier):
-#Cette fonction calcule le prix d'une option d'achat Barrier Down And In
-#
-# INPUTS
-#----------------------------------------------------------------
-# spot    : prix au comptant
-# strike  : prix d'exercice
-# vol     : volatilité
-# rfr     : taux d'intérêt sans risque
-# life    : maturité
-# barrier : barrière
-#
-# OUTPUT
-#----------------------------------------------------------------
-# Prix de l'option d'achat Barrier Down And In
-#
-#----------------------------------------------------------------
+def callPriceBarrierDownAndIn(spot, vol, rfr, lif, strike, barrier):
+    #Cette fonction calcule le prix d'une option d'achat Barrier Down And In
 
     lam = (rfr + ((vol**2) / 2)) / (vol**2)
-    y = log((barrier**2) / (spot*strike)) / (vol*sqrt(life)) + lam *vol*sqrt(life)
-    
+    y = log((barrier**2) / (spot*strike)) / (vol * sqrt(lif)) + lam * vol * sqrt(lif)
+
     a = spot*((barrier/spot)**(2*lam))*stats.norm.cdf(y, 0, 1)
-    b = (strike*exp(-rfr*life))*((barrier/spot)**(2*lam - 2))*stats.norm.cdf(y - vol * sqrt(life), 0, 1)
-    
+    b = (strike * exp(-rfr * lif)) * ((barrier / spot) ** (2 * lam - 2)) * stats.norm.cdf(y - vol * sqrt(lif), 0, 1)
+
     price = a - b
 
     return price
 
 
 def putPriceBarrierDownAndIn(spot, vol, rfr, life, strike, barrier):
-#Cette fonction calcule le prix d'une option de vente Barrier Down And In
-#
-# INPUTS
-#----------------------------------------------------------------
-# spot    : prix au comptant
-# strike  : prix d'exercice
-# vol     : volatilité
-# rfr     : taux d'intérêt sans risque
-# life    : maturité
-# barrier : barrière
-#
-# OUTPUT
-#----------------------------------------------------------------
-# Prix de l'option de vente Barrier Down And In
-#
-#----------------------------------------------------------------
+    #Cette fonction calcule le prix d'une option de vente Barrier Down And In
 
     lam = (rfr + ((vol**2) / 2)) / (vol**2)
     y = log((barrier**2) / (spot*strike)) / (vol*sqrt(life)) + lam * vol * sqrt(life)
@@ -1127,159 +1022,97 @@ def putPriceBarrierDownAndIn(spot, vol, rfr, life, strike, barrier):
 ####################################################################### Binary Cash or Nothing #############################################################################
 
 
-def callPriceBinaryCashOrNothing(v1, v2, v3, v4, v5, v6) :
-# Cette fonction calcule le prix d'une option d'achat Binary Cash Or Nothing
-#
-# INPUTS
-#----------------------------------------------------------------
-# v1 : prix au comptant
-# v2 : prix d'exercice
-# v3 : volatilité
-# v4 : taux d'intérêt sans risque
-# v5 : maturité
-# v6 : montant de cash
-#
-# OUTPUT
-#----------------------------------------------------------------
-#
-# Prix de l'option d'achat Binary Cash Or Nothing
-#
-#----------------------------------------------------------------
+def callPriceBinaryCashOrNothing(spot, strp, vol, rfr, lif, cash) :
+    # Cette fonction calcule le prix d'une option d'achat Binary Cash Or Nothing
 
-   d1 = ((log(v1 / v2)) + ((v4 + ((v3**2) / 2)) * v5)) / (v3 * sqrt(v5))
-   d2 = d1 - (v3 * sqrt(v5))
-   cdf = stats.norm.cdf(d2, 0, 1)
-   price = exp(-(v4 * v5)) * cdf * v6
+    d1 = ((log(spot / strp)) + ((rfr + ((vol ** 2) / 2)) * lif)) / (vol * sqrt(lif))
+    d2 = d1 - (vol * sqrt(lif))
+    cdf = stats.norm.cdf(d2, 0, 1)
+    price = exp(-(rfr * lif)) * cdf * cash
    
-   return price
+    return price
 
 
-def putPriceBinaryCashOrNothing(v1, v2, v3, v4, v5, v6) :
-# Cette fonction calcule le prix d'une option de vente Binary Cash Or Nothing
-#
-# INPUTS
-#----------------------------------------------------------------
-# v1 : prix au comptant
-# v2 : prix d'exercice
-# v3 : volatilité
-# v4 : taux d'intérêt sans risque
-# v5 : maturité
-# v6 : montant de cash
-#
-# OUTPUT
-#----------------------------------------------------------------
-#
-# Prix de l'option de vente Binary Cash Or Nothing
-#
-#----------------------------------------------------------------
+def putPriceBinaryCashOrNothing(spot, strp, vol, rfr, lif, cash):
+    # Cette fonction calcule le prix d'une option de vente Binary Cash Or Nothing
 
-   d1 = ((log(v1 / v2)) + ((v4 + ((v3**2) / 2)) * v5)) / (v3 * sqrt(v5))
-   d2 = d1 - (v3 * sqrt(v5))
-   cdf = stats.norm.cdf(d2, 0, 1)
-   price = exp(-v4 * v5) * (1 - cdf) * v6
+    d1 = ((log(spot / strp)) + ((rfr + ((vol ** 2) / 2)) * lif)) / (vol * sqrt(lif))
+    d2 = d1 - (vol * sqrt(lif))
+    cdf = stats.norm.cdf(d2, 0, 1)
+    price = exp(-rfr * lif) * (1 - cdf) * cash
 
-   return price
+    return price
 
 
 def call_Binary_Cash_Or_Nothing_model(spot, vol, rfr, life, strike, cash):
-# Cette fonction calcule le prix et les greeks d'une option d'achat Binary Cash Or Nothing
-#
-# INPUTS
-#----------------------------------------------------------------
-# spot   : prix au comptant
-# vol    : volatilité
-# rfr    : taux d'intérêt sans risque
-# life   : maturité
-# strike : prix d'exercice
-# cash   : montant de cash
-#
-# OUTPUT
-#----------------------------------------------------------------
-#
-# Prix et greeks de l'option d'achat Binary Cash Or Nothing
-#
-#----------------------------------------------------------------
-   d1 = ((log(spot / strike)) + ((rfr + ((vol**2) / 2)) * life)) / (vol * sqrt(life))
-   d2 = d1 - (vol * sqrt(life))
+    # Cette fonction calcule le prix et les greeks d'une option d'achat Binary Cash Or Nothing
 
-   Pi = pi #nombre Pi
-   phi1 = exp(-(d1**2 / 2)) / sqrt(2 * Pi)
+    d1 = ((log(spot / strike)) + ((rfr + ((vol**2) / 2)) * life)) / (vol * sqrt(life))
+    d2 = d1 - (vol * sqrt(life))
 
-   cdf2 = stats.norm.cdf(d2, 0, 1) #fonction de répartition de la loi normale
+    Pi = pi #nombre Pi
+    phi1 = exp(-(d1**2 / 2)) / sqrt(2 * Pi)
 
-   price = exp(-(rfr * life)) * cdf2 * cash #price
-   delta = ((spot / strike) * (phi1 / (spot * vol * sqrt(life)))) * cash #delta
-   gamma = (-((phi1 / (spot * vol * sqrt(life))) / strike) * (d1 / (vol * sqrt(life)))) * cash #gamma
-   #Vega
-   vol2 = vol + 0.01 #Lorsque la volatilité augmente de 1%
-   d1Vol = ((log(spot / strike)) + ((rfr + ((vol2**2) / 2)) * life)) / (vol2 * sqrt(life))
-   d2Vol = d1Vol - (vol2 * sqrt(life))
-   cdf2Vol = stats.norm.cdf(d2Vol, 0, 1)
-   vega = (exp(-(rfr * life)) * cdf2Vol * cash) - (exp(-(rfr * life)) * cdf2 * cash)
-   #Theta
-   life2 = life * 0.99726027 #Maturité - 1 jour
-   d1life = ((log(spot / strike)) + ((rfr + ((vol**2) / 2)) * life2)) / (vol * sqrt(life2))
-   d2life = d1life - (vol * sqrt(life2))
-   cdf2life = stats.norm.cdf(d2life, 0, 1)
-   theta = (exp(-(rfr * life2)) * cdf2life * cash) - (exp(-(rfr * life)) * cdf2 * cash)
-   #Rho
-   rfr2 = rfr + 0.01 #Lorsque le taux sans risque augmente de 1%
-   d1RFR = ((log(spot / strike)) + ((rfr2 + ((vol**2) / 2)) * life)) / (vol * sqrt(life))
-   d2RFR = d1RFR - (vol * sqrt(life))
-   cdf2RFR = stats.norm.cdf(d2RFR, 0, 1)
-   rho = (exp(-(rfr2 * life)) * cdf2RFR * cash) - (exp(-(rfr * life)) * cdf2 * cash)
-   
-   return price, delta, gamma, vega, theta, rho
+    cdf2 = stats.norm.cdf(d2, 0, 1) #fonction de répartition de la loi normale
+
+    price = exp(-(rfr * life)) * cdf2 * cash #price
+    delta = ((spot / strike) * (phi1 / (spot * vol * sqrt(life)))) * cash #delta
+    gamma = (-((phi1 / (spot * vol * sqrt(life))) / strike) * (d1 / (vol * sqrt(life)))) * cash #gamma
+    #Vega
+    vol2 = vol + 0.01 #Lorsque la volatilité augmente de 1%
+    d1Vol = ((log(spot / strike)) + ((rfr + ((vol2**2) / 2)) * life)) / (vol2 * sqrt(life))
+    d2Vol = d1Vol - (vol2 * sqrt(life))
+    cdf2Vol = stats.norm.cdf(d2Vol, 0, 1)
+    vega = (exp(-(rfr * life)) * cdf2Vol * cash) - (exp(-(rfr * life)) * cdf2 * cash)
+    #Theta
+    life2 = life * 0.99726027 #Maturité - 1 jour
+    d1life = ((log(spot / strike)) + ((rfr + ((vol**2) / 2)) * life2)) / (vol * sqrt(life2))
+    d2life = d1life - (vol * sqrt(life2))
+    cdf2life = stats.norm.cdf(d2life, 0, 1)
+    theta = (exp(-(rfr * life2)) * cdf2life * cash) - (exp(-(rfr * life)) * cdf2 * cash)
+    #Rho
+    rfr2 = rfr + 0.01 #Lorsque le taux sans risque augmente de 1%
+    d1RFR = ((log(spot / strike)) + ((rfr2 + ((vol**2) / 2)) * life)) / (vol * sqrt(life))
+    d2RFR = d1RFR - (vol * sqrt(life))
+    cdf2RFR = stats.norm.cdf(d2RFR, 0, 1)
+    rho = (exp(-(rfr2 * life)) * cdf2RFR * cash) - (exp(-(rfr * life)) * cdf2 * cash)
+
+    return price, delta, gamma, vega, theta, rho
 
 def put_Binary_Cash_Or_Nothing_model(spot, vol, rfr, life, strike, cash):
-# Cette fonction calcule le prix et les greeks d'une option de vente Binary Cash Or Nothing
-#
-# INPUTS
-#----------------------------------------------------------------
-# spot   : prix au comptant
-# vol    : volatilité
-# rfr    : taux d'intérêt sans risque
-# life   : maturité
-# strike : prix d'exercice
-# cash   : montant de cash
-#
-# OUTPUT
-#----------------------------------------------------------------
-#
-# Prix et greeks de l'option de vente Binary Cash Or Nothing
-#
-#----------------------------------------------------------------
-   d1 = ((log(spot / strike)) + ((rfr + ((vol**2) / 2)) * life)) / (vol * sqrt(life))
-   d2 = d1 - (vol * sqrt(life))
+    # Cette fonction calcule le prix et les greeks d'une option de vente Binary Cash Or Nothing
 
-   Pi = pi #nombre Pi
-   phi1 = exp(-(d1**2 / 2)) / sqrt(2 * Pi)
+    d1 = ((log(spot / strike)) + ((rfr + ((vol**2) / 2)) * life)) / (vol * sqrt(life))
+    d2 = d1 - (vol * sqrt(life))
 
-   cdf2 = stats.norm.cdf(d2, 0, 1) #fonction de répartition de la loi normale
+    Pi = pi #nombre Pi
+    phi1 = exp(-(d1**2 / 2)) / sqrt(2 * Pi)
 
-   price = exp(-(rfr * life)) * (1-cdf2) * cash #price
-   delta = (-(spot / strike)) * (phi1 / (spot * vol * sqrt(life))) * cash #delta
-   gamma = (((phi1 / (spot * vol * sqrt(life))) / strike) * (d1 / (vol * sqrt(life)))) * cash #gamma
-   #Vega
-   vol2 = vol + 0.01 #Lorsque la volatilité augmente de 1%
-   d1Vol = ((log(spot / strike)) + ((rfr + ((vol2**2) / 2)) * life)) / (vol2 * sqrt(life))
-   d2Vol = d1Vol - (vol2 * sqrt(life))
-   cdf2Vol = stats.norm.cdf(d2Vol, 0, 1)
-   vega = (exp(-(rfr * life)) * (1-cdf2Vol) * cash) - (exp(-(rfr * life)) * (1-cdf2) * cash)
-   #Theta
-   life2 = life * 0.99726027 #Maturité - 1 jour
-   d1life = ((log(spot / strike)) + ((rfr + ((vol**2) / 2)) * life2)) / (vol * sqrt(life2))
-   d2life = d1life - (vol * sqrt(life2))
-   cdf2life = stats.norm.cdf(d2life, 0, 1)
-   theta = (exp(-(rfr * life2)) * (1-cdf2life) * cash) - (exp(-(rfr * life)) * (1-cdf2) * cash)
-   #Rho
-   rfr2 = rfr + 0.01 #Lorsque le taux sans risque augmente de 1%
-   d1RFR = ((log(spot / strike)) + ((rfr2 + ((vol**2) / 2)) * life)) / (vol * sqrt(life))
-   d2RFR = d1RFR - (vol * sqrt(life))
-   cdf2RFR = stats.norm.cdf(d2RFR, 0, 1)
-   rho = (exp(-(rfr2 * life)) * (1-cdf2RFR) * cash) - (exp(-(rfr * life)) * (1-cdf2) * cash)
-   
-   return price, delta, gamma, vega, theta, rho
+    cdf2 = stats.norm.cdf(d2, 0, 1) #fonction de répartition de la loi normale
+
+    price = exp(-(rfr * life)) * (1-cdf2) * cash #price
+    delta = (-(spot / strike)) * (phi1 / (spot * vol * sqrt(life))) * cash #delta
+    gamma = (((phi1 / (spot * vol * sqrt(life))) / strike) * (d1 / (vol * sqrt(life)))) * cash #gamma
+    #Vega
+    vol2 = vol + 0.01 #Lorsque la volatilité augmente de 1%
+    d1Vol = ((log(spot / strike)) + ((rfr + ((vol2**2) / 2)) * life)) / (vol2 * sqrt(life))
+    d2Vol = d1Vol - (vol2 * sqrt(life))
+    cdf2Vol = stats.norm.cdf(d2Vol, 0, 1)
+    vega = (exp(-(rfr * life)) * (1-cdf2Vol) * cash) - (exp(-(rfr * life)) * (1-cdf2) * cash)
+    #Theta
+    life2 = life * 0.99726027 #Maturité - 1 jour
+    d1life = ((log(spot / strike)) + ((rfr + ((vol**2) / 2)) * life2)) / (vol * sqrt(life2))
+    d2life = d1life - (vol * sqrt(life2))
+    cdf2life = stats.norm.cdf(d2life, 0, 1)
+    theta = (exp(-(rfr * life2)) * (1-cdf2life) * cash) - (exp(-(rfr * life)) * (1-cdf2) * cash)
+    #Rho
+    rfr2 = rfr + 0.01 #Lorsque le taux sans risque augmente de 1%
+    d1RFR = ((log(spot / strike)) + ((rfr2 + ((vol**2) / 2)) * life)) / (vol * sqrt(life))
+    d2RFR = d1RFR - (vol * sqrt(life))
+    cdf2RFR = stats.norm.cdf(d2RFR, 0, 1)
+    rho = (exp(-(rfr2 * life)) * (1-cdf2RFR) * cash) - (exp(-(rfr * life)) * (1-cdf2) * cash)
+
+    return price, delta, gamma, vega, theta, rho
 
 
 ################################################################################ Binary Asset or Nothing ####################################################################################
@@ -1292,7 +1125,7 @@ def call_Binary_Asset_Or_Nothing_model(spot, vol, rfr, life, strike):
     life2=life*(364/365)
     price = sum(call_price_BS_model(spot, vol, rfr, life, strike) + list([callPriceBinaryCashOrNothing(spot, strike, vol, rfr, life, strike)])) #prix du call au spot
     price2 =sum(call_price_BS_model(spot2, vol, rfr, life, strike) + list([callPriceBinaryCashOrNothing(spot2, strike, vol, rfr, life, strike)]))#prix du call au spot + 1
-    price3 = sum(call_price_BS_model(spot3, vol, rfr, life, strike) + list([callPriceBinaryCashOrNothing(spot3, strike, vol, rfr, life, strike)])) #prix du call au spot + 2 
+    price3 = sum(call_price_BS_model(spot3, vol, rfr, life, strike) + list([callPriceBinaryCashOrNothing(spot3, strike, vol, rfr, life, strike)])) #prix du call au spot + 2
     delta = price2 - price #delta du call au niveau du spot
     delta2 = price3 - price2 #delta du call au niveau du spot + 1
     gamma = delta2-delta #gamma
@@ -1309,7 +1142,7 @@ def put_Binary_Asset_Or_Nothing_model(spot, vol, rfr, life, strike):
     life2=life*(364/365)
     price = sum(put_price_BS_model(spot, vol, rfr, life, strike) + list([putPriceBinaryCashOrNothing(spot, strike, vol, rfr, life, strike)])) #prix du call au spot
     price2 =sum(put_price_BS_model(spot2, vol, rfr, life, strike) + list([putPriceBinaryCashOrNothing(spot2, strike, vol, rfr, life, strike)]))#prix du call au spot + 1
-    price3 = sum(put_price_BS_model(spot3, vol, rfr, life, strike) + list([putPriceBinaryCashOrNothing(spot3, strike, vol, rfr, life, strike)])) #prix du call au spot + 2 
+    price3 = sum(put_price_BS_model(spot3, vol, rfr, life, strike) + list([putPriceBinaryCashOrNothing(spot3, strike, vol, rfr, life, strike)])) #prix du call au spot + 2
     delta = price2 - price #delta du call au niveau du spot
     delta2 = price3 - price2 #delta du call au niveau du spot + 1
     gamma = delta2-delta #gamma
