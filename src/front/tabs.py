@@ -53,7 +53,7 @@ class OptionsCalculatorTab(_BaseTab):
         self.lif = Entry(self).grid(column = 1,row = 7,padx = 1,pady = 1)
         self.strp = Entry(self).grid(column = 1,row = 8,padx = 1,pady = 1)
 
-        self.stop = Entry(self).grid(column = 1,row = 2,padx = 1,pady = 1)  
+        self.spot = Entry(self).grid(column = 1, row = 2, padx = 1, pady = 1)
         self.vol = Entry(self).grid(column = 1,row = 3,padx = 1,pady = 1)
         self.rfr = Entry(self).grid(column = 1,row = 4,padx = 1,pady = 1) 
         
