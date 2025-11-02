@@ -4,86 +4,49 @@ import random
 from math import *
 
 
-def monteCarloEuropeanLogNormalCall(v1, v2, v3, v4, v5, v6, v7, v8, v9):
+def monteCarloEuropeanLogNormalCall(spot, vol, rfr, lif, strp, divy, nts, nos, rans):
 # Cette fonction renvoie le prix d'une option européenne d'achat via Monte Carlo avec le modèle log normal
-#
-# INPUTS
-#----------------------------------------------------------------
-# v1 : prix au comptant
-# v2 : volatilité
-# v3 : taux d'intérêt sans risque
-# v4 : maturité
-# v5 : prix d'exercice
-# v6 : dividendes
-# v7 : nombre d'itérations
-# v8 : nombre de simulations
-# v9 : fixation de l'aléa
-#
-# OUTPUT
-#----------------------------------------------------------------
-#
-# Prix de l'option d'achat, l'écart type et les paths
-#
-#----------------------------------------------------------------
 
-   timeStep = v4/v7 #Le pas d'itération
+   timeStep = lif / nts #Le pas d'itération
 
-   tableauSpots = [[0] * (v7+1) for _ in range(v8)]
+   tableauSpots = [[0] * (nts + 1) for _ in range(nos)]
    
    # Fixe le générateur de nombre aléatoire
-   random.seed(v9)
+   random.seed(rans)
    u = random.random()
    
    #Tableau contenant le passage du temps
    global tableauTime
-   tableauTime = [[0] * (1) for _ in range(v7+1)]
+   tableauTime = [[0] * (1) for _ in range(nts + 1)]
    tableauTime[0] = 0 #Initialisation
-   for i in range(1,v7+1):
+   for i in range(1, nts + 1):
        tableauTime[i] = tableauTime[i-1] + timeStep
 
    #Simulation de Monte Carlo sous l'hypothèse que le sous-jacent suit une distribution log-normale
-   for i in range (v8):
-       tableauSpots[i][0] = v1
-       for j in range (1, v7+1):
+   for i in range (nos):
+       tableauSpots[i][0] = spot
+       for j in range (1, nts + 1):
             u = random.random()
             z = stats.norm.ppf(u, 0, 1)
-            tableauSpots[i][j] =  tableauSpots[i][j-1] * exp((v3 - v6 - ((v2**2) / 2)) * timeStep + (v2 * sqrt(timeStep) * z))
+            tableauSpots[i][j] =  tableauSpots[i][j-1] * exp((rfr - divy - ((vol ** 2) / 2)) * timeStep + (vol * sqrt(timeStep) * z))
             u = random.random()
           
    #Calcul du prix de l'option et l'écart-type de la simulation
-   tableauResults = [[0] * (1) for _ in range(v8)]
+   tableauResults = [[0] * (1) for _ in range(nos)]
    priceCum = 0
-   for i in range (v8):
-       tableauResults[i] = max(tableauSpots[i][v7] - v5, 0) * exp(-v3 * v4)
+   for i in range (nos):
+       tableauResults[i] = max(tableauSpots[i][nts] - strp, 0) * exp(-rfr * lif)
        priceCum = priceCum + tableauResults[i]
    
-   price = priceCum / v8
-   standardDeviation = statistics.stdev(tableauResults) / sqrt(v8)
+   price = priceCum / nos
+   standardDeviation = statistics.stdev(tableauResults) / sqrt(nos)
    
    return price, standardDeviation, tableauSpots
 
 
 def monteCarloEuropeanLogNormalPut(v1, v2, v3, v4, v5, v6, v7, v8, v9):
 # Cette fonction renvoie le prix d'une option européenne de vente via Monte Carlo avec le modèle log normal
-#
-# INPUTS
-#----------------------------------------------------------------
-# v1 : prix au comptant
-# v2 : volatilité
-# v3 : taux d'intérêt sans risque
-# v4 : maturité
-# v5 : prix d'exercice
-# v6 : dividendes
-# v7 : nombre d'itérations
-# v8 : nombre de simulations
-# v9 : fixation de l'aléa
-#
-# OUTPUT
-#----------------------------------------------------------------
-#
-# Prix de l'option de vente, l'écart type et les paths
-#
-#----------------------------------------------------------------
+
 
    timeStep = v4/v7 #Le pas d'itération
 
