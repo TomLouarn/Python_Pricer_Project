@@ -4,86 +4,86 @@ import random
 
 
 #Cette fonction calcule la volatilité implicite pour un call avec le modèle Black et Scholes
-def call_implied_volatility_BS(stop2, strp2, rfr2, lif2, prio2, stav):
+def call_implied_volatility_BS(spot, strp, rfr, lif, prio, stav):
     dVol = 0.0000001
     epsilon = 0.0000001
     maxIter = 1000
     vol_1 = stav
     i = 1
     while True:
-        Value_1 = call_price_greeks_BS_model(stop2, vol_1, rfr2, lif2, strp2)[0]
+        Value_1 = call_price_greeks_BS_model(spot, vol_1, rfr, lif, strp)[0]
         vol_2 = vol_1 - dVol
-        Value_2 = call_price_greeks_BS_model(stop2, vol_2, rfr2, lif2, strp2)[0]
+        Value_2 = call_price_greeks_BS_model(spot, vol_2, rfr, lif, strp)[0]
         dx = (Value_2 - Value_1) / dVol
         if abs(dx) < epsilon or i == maxIter: break
-        vol_1 = vol_1 - (prio2 - Value_1) / dx
+        vol_1 = vol_1 - (prio - Value_1) / dx
         i = i + 1   
     return vol_1
    
 #Cette fonction calcule la volatilité implicite pour un put avec le modèle Black et Scholes (sj equity)
-def put_implied_volatility_BS(stop2, strp2, rfr2, lif2, prio2, stav):
+def put_implied_volatility_BS(spot, strp, rfr, lif, prio, stav):
     dVol = 0.0000001
     epsilon = 0.0000001
     maxIter = 1000
     vol_1 = stav
     i = 1
     while True:
-        Value_1 = put_price_greeks_BS_model(stop2, vol_1, rfr2, lif2, strp2)[0]
+        Value_1 = put_price_greeks_BS_model(spot, vol_1, rfr, lif, strp)[0]
         vol_2 = vol_1 - dVol
-        Value_2 = put_price_greeks_BS_model(stop2, vol_2, rfr2, lif2, strp2)[0]
+        Value_2 = put_price_greeks_BS_model(spot, vol_2, rfr, lif, strp)[0]
         dx = (Value_2 - Value_1) / dVol
         if abs(dx) < epsilon or i == maxIter: break
-        vol_1 = vol_1 - (prio2 - Value_1) / dx
+        vol_1 = vol_1 - (prio - Value_1) / dx
         i = i + 1    
     return vol_1
 
 
 #Cette fonction calcule le prix pour une call européenne avec le modèle de Black et Scholes (sj equity)
-def call_price_BS_model(stop, vol, rfr, lif, strp):
-    d1 = ((log(stop/strp)) + ((rfr + ((vol**2)/2)) * lif)) / (vol * sqrt(lif))
+def call_price_BS_model(spot, vol, rfr, lif, strp):
+    d1 = ((log(spot / strp)) + ((rfr + ((vol ** 2) / 2)) * lif)) / (vol * sqrt(lif))
     d2 = d1 - (vol*sqrt(lif))
     cdf11 = stats.norm.cdf(d1, loc = 0, scale = 1)
     cdf12 = stats.norm.cdf(d2, loc = 0, scale = 1)
-    price = (stop * cdf11) - (strp * exp(-(rfr * lif)) * cdf12)
+    price = (spot * cdf11) - (strp * exp(-(rfr * lif)) * cdf12)
     return price
 
  #Cette fonction calcule le prix pour un put européenne avec le modèle de Black et Scholes (sj equity)
-def put_price_BS_model(stop, vol, rfr, lif, strp):
-    d1 = ((log(stop/strp)) + ((rfr + ((vol**2)/2)) * lif)) / (vol * sqrt(lif))
+def put_price_BS_model(spot, vol, rfr, lif, strp):
+    d1 = ((log(spot / strp)) + ((rfr + ((vol ** 2) / 2)) * lif)) / (vol * sqrt(lif))
     d2 = d1 - (vol*sqrt(lif))
     cdf22 = stats.norm.cdf(-d2, loc = 0, scale = 1)
     cdf1 = stats.norm.cdf(-d1, loc = 0, scale = 1)
-    price = strp * exp(-(rfr * lif)) * cdf22 - (stop * cdf1)
+    price = strp * exp(-(rfr * lif)) * cdf22 - (spot * cdf1)
     return price
 
  #Cette fonction calcule le prix et les greeks pour un call européenne avec le modèle de Black et Scholes (sj equity)
-def call_price_greeks_BS_model(stop, vol, rfr, lif, strp):
-    d1 = ((log(stop/strp)) + ((rfr + ((vol**2)/2)) * lif)) / (vol * sqrt(lif))
+def call_price_greeks_BS_model(spot, vol, rfr, lif, strp):
+    d1 = ((log(spot / strp)) + ((rfr + ((vol ** 2) / 2)) * lif)) / (vol * sqrt(lif))
     d2 = d1 - (vol*sqrt(lif))
     phi1 = exp(-(d1**2 / 2)) / sqrt(2*pi)
     cdf11 = stats.norm.cdf(d1, loc = 0, scale = 1)
     cdf12 = stats.norm.cdf(d2, loc = 0, scale = 1)
-    price = (stop * cdf11) - (strp * exp(-(rfr * lif)) * cdf12)
+    price = (spot * cdf11) - (strp * exp(-(rfr * lif)) * cdf12)
     delta = cdf11
-    gamma = phi1 / (stop * vol * sqrt(lif))
-    vega = stop * phi1 * sqrt(lif) / 100
-    theta = (-((stop * phi1 * vol) / (2 * sqrt(lif))) - (rfr * strp * exp(-rfr * lif) * cdf12)) / 365
+    gamma = phi1 / (spot * vol * sqrt(lif))
+    vega = spot * phi1 * sqrt(lif) / 100
+    theta = (-((spot * phi1 * vol) / (2 * sqrt(lif))) - (rfr * strp * exp(-rfr * lif) * cdf12)) / 365
     rho = (strp * lif * exp(-rfr * lif) * cdf12) / 100
     return price, delta, gamma, vega, theta, rho
 
  #Cette fonction calcule le prix et les greeks pour un put européenne avec le modèle de Black et Scholes (sj equity)
-def put_price_greeks_BS_model(stop, vol, rfr, lif, strp):
-    d1 = ((log(stop/strp)) + ((rfr + ((vol**2)/2)) * lif)) / (vol * sqrt(lif))
+def put_price_greeks_BS_model(spot, vol, rfr, lif, strp):
+    d1 = ((log(spot / strp)) + ((rfr + ((vol ** 2) / 2)) * lif)) / (vol * sqrt(lif))
     d2 = d1 - (vol*sqrt(lif))
     phi1 = exp(-(d1**2 / 2)) / sqrt(2*pi)
     cdf11 = stats.norm.cdf(d1, loc = 0, scale = 1)
     cdf22 = stats.norm.cdf(-d2, loc = 0, scale = 1)
     cdf1 = stats.norm.cdf(-d1, loc = 0, scale = 1)
-    price = strp * exp(-(rfr * lif)) * cdf22 - (stop * cdf1)
+    price = strp * exp(-(rfr * lif)) * cdf22 - (spot * cdf1)
     delta = cdf11-1
-    gamma = phi1 / (stop * vol * sqrt(lif))
-    vega = stop * phi1 * sqrt(lif) / 100
-    theta = (-((stop * phi1 * vol) / (2 * sqrt(lif))) + (rfr * strp * exp(-rfr * lif) * cdf22)) / 365
+    gamma = phi1 / (spot * vol * sqrt(lif))
+    vega = spot * phi1 * sqrt(lif) / 100
+    theta = (-((spot * phi1 * vol) / (2 * sqrt(lif))) + (rfr * strp * exp(-rfr * lif) * cdf22)) / 365
     rho = (-strp * lif * exp(-rfr * lif) * cdf22) / 100
     return price, delta, gamma, vega, theta, rho
 
@@ -92,14 +92,14 @@ def put_price_greeks_BS_model(stop, vol, rfr, lif, strp):
 
 
 #Cette fonction calcule le prix d'un call européenne avec le modèle Binomial (sj equity)
-def call_price_binomial_european_model(stop, vol, rfr, lif, strp, niter):
+def call_price_binomial_european_model(spot, vol, rfr, lif, strp, niter):
     up = exp(vol*sqrt(lif/niter))
     down = 1/up
     prob = (exp(rfr*lif/niter)-down)/(up-down) #probabilité d'un mouvement de hausse
     prob_ = 1-prob #probabilité d'un mouvement de baisse
     res = []
     for i in range(niter+1): #Boucle qui stocke les valeurs finales de l'arbre binomial dans 'tableau'
-        res.append(stop*(down**i)*(up**(niter-i)))
+        res.append(spot * (down ** i) * (up ** (niter - i)))
         if res[i] < strp:
             res[i] = 0
         else:
@@ -112,14 +112,14 @@ def call_price_binomial_european_model(stop, vol, rfr, lif, strp, niter):
     return price
     
 #Cette fonction calcule le prix d'un put européenne avec le modèle Binomial (sj equity)
-def put_price_binomial_european_model(stop, vol, rfr, lif, strp, niter):
+def put_price_binomial_european_model(spot, vol, rfr, lif, strp, niter):
     up = exp(vol*sqrt(lif/niter))
     down = 1/up
     prob = (exp(rfr*lif/niter)-down)/(up-down) #probabilité d'un mouvement de hausse
     prob_ = 1-prob #probabilité d'un mouvement de baisse
     res = []
     for i in range(niter+1): #Boucle qui stocke les valeurs finales de l'arbre binomial dans 'tableau'
-        res.append(stop*(down**i)*(up**(niter-i)))
+        res.append(spot * (down ** i) * (up ** (niter - i)))
         if res[i] > strp:
             res[i] = 0
         else:
@@ -132,7 +132,7 @@ def put_price_binomial_european_model(stop, vol, rfr, lif, strp, niter):
     return price
 
 #Cette fonction calcule les greeks d'un call européenne avec le modèle Binomial (sj equity)
-def call_greeks_binomial_european_model(stop, vol, rfr, lif, strp, niter):
+def call_greeks_binomial_european_model(spot, vol, rfr, lif, strp, niter):
     vol2 = vol + 0.01
     rfr2 = rfr + 0.01
     up = exp(vol*sqrt(lif/niter))
@@ -141,7 +141,7 @@ def call_greeks_binomial_european_model(stop, vol, rfr, lif, strp, niter):
     prob_ = 1-prob #probabilité d'un mouvement de baisse
     res = []
     for i in range(niter+1): #Boucle qui stocke les valeurs finales de l'arbre binomial dans 'res'
-        res.append(stop*(down**i)*(up**(niter-i)))
+        res.append(spot * (down ** i) * (up ** (niter - i)))
         if res[i] < strp:
             res[i] = 0
         else:
@@ -153,7 +153,7 @@ def call_greeks_binomial_european_model(stop, vol, rfr, lif, strp, niter):
     prob_2 = 1-prob2 #probabilité d'un mouvement de baisse
     res2 = []
     for i in range(niter+1): #Boucle qui stocke les valeurs finales de l'arbre binomial dans 'res2'
-        res2.append(stop*(down2**i)*(up2**(niter-i)))
+        res2.append(spot * (down2 ** i) * (up2 ** (niter - i)))
         if res2[i] < strp:
             res2[i] = 0
         else:
@@ -181,15 +181,15 @@ def call_greeks_binomial_european_model(stop, vol, rfr, lif, strp, niter):
                 fdd = res[2]
             res2[j]=exp((-rfr) * timeStep) * (prob2 * res2[j] + prob_2 * res2[j + 1])
             res3[j]=exp((-rfr2) * timeStep) * (prob3 * res3[j] + prob_3 * res3[j + 1])
-    delta = (fu - fd) / ((stop*up)-(stop*down))
-    gamma = (((fuu - fud) / (stop * up * up - stop * up * down)) - ((fud - fdd) / (stop * up * down - stop * down * down))) / ((stop * up * up - stop * down * down) / 2)
+    delta = (fu - fd) / ((spot * up) - (spot * down))
+    gamma = (((fuu - fud) / (spot * up * up - spot * up * down)) - ((fud - fdd) / (spot * up * down - spot * down * down))) / ((spot * up * up - spot * down * down) / 2)
     vega = res2[0] - res[0]
     theta = (fud - res[0]) / (2 * lif * 365 / niter)
     rho = res3[0] - res[0]
     return delta, gamma, vega, theta, rho
 
 #Cette fonction calcule les greeks d'un put européenne avec le modèle Binomial (sj equity)
-def put_greeks_binomial_european_model(stop, vol, rfr, lif, strp, niter):
+def put_greeks_binomial_european_model(spot, vol, rfr, lif, strp, niter):
     vol2 = vol + 0.01
     rfr2 = rfr + 0.01
     up = exp(vol*sqrt(lif/niter))
@@ -198,7 +198,7 @@ def put_greeks_binomial_european_model(stop, vol, rfr, lif, strp, niter):
     prob_ = 1-prob #probabilité d'un mouvement de baisse
     res = []
     for i in range(niter+1): #Boucle qui stocke les valeurs finales de l'arbre binomial dans 'res'
-        res.append(stop*(down**i)*(up**(niter-i)))
+        res.append(spot * (down ** i) * (up ** (niter - i)))
         if res[i] > strp:
             res[i] = 0
         else:
@@ -210,7 +210,7 @@ def put_greeks_binomial_european_model(stop, vol, rfr, lif, strp, niter):
     prob_2 = 1-prob2 #probabilité d'un mouvement de baisse
     res2 = []
     for i in range(niter+1): #Boucle qui stocke les valeurs finales de l'arbre binomial dans 'res2'
-        res2.append(stop*(down2**i)*(up2**(niter-i)))
+        res2.append(spot * (down2 ** i) * (up2 ** (niter - i)))
         if res2[i] > strp:
             res2[i] = 0
         else:
@@ -238,8 +238,8 @@ def put_greeks_binomial_european_model(stop, vol, rfr, lif, strp, niter):
                 fdd = res[2]
             res2[j]=exp((-rfr) * timeStep) * (prob2 * res2[j] + prob_2 * res2[j + 1])
             res3[j]=exp((-rfr2) * timeStep) * (prob3 * res3[j] + prob_3 * res3[j + 1])
-    delta = (fu - fd) / ((stop*up)-(stop*down))
-    gamma = (((fuu - fud) / (stop * up * up - stop * up * down)) - ((fud - fdd) / (stop * up * down - stop * down * down))) / ((stop * up * up - stop * down * down) / 2)
+    delta = (fu - fd) / ((spot * up) - (spot * down))
+    gamma = (((fuu - fud) / (spot * up * up - spot * up * down)) - ((fud - fdd) / (spot * up * down - spot * down * down))) / ((spot * up * up - spot * down * down) / 2)
     vega = res2[0] - res[0]
     theta = (fud - res[0]) / (2 * lif * 365 / niter)
     rho = res3[0] - res[0]
@@ -248,14 +248,14 @@ def put_greeks_binomial_european_model(stop, vol, rfr, lif, strp, niter):
     return delta, gamma, vega, theta, rho
 
 #Cette fonction calcule le prix d'un call american avec le modèle Binomial (sj equity)
-def call_price_binomial_american_model(stop, vol, rfr, lif, strp, niter):
+def call_price_binomial_american_model(spot, vol, rfr, lif, strp, niter):
     up = exp(vol*sqrt(lif/niter))
     down = 1/up
     prob = (exp(rfr*lif/niter)-down)/(up-down) #probabilité d'un mouvement de hausse
     prob_ = 1-prob #probabilité d'un mouvement de baisse
     res = []
     for i in range(niter+1): #Boucle qui stocke les valeurs finales de l'arbre binomial dans 'tableau'
-        res.append(stop*(down**i)*(up**(niter-i)))
+        res.append(spot * (down ** i) * (up ** (niter - i)))
         if res[i] < strp:
             res[i] = 0
         else:
@@ -264,20 +264,20 @@ def call_price_binomial_american_model(stop, vol, rfr, lif, strp, niter):
     for i in range(1,niter+1):
         for j in range(niter+1-i):
             res[j] = exp((-rfr)*timeStep)*(prob*res[j]+prob_*res[j+1])
-            if res[j] < (stop * (up**(niter - i - j)) * (down**j)) - strp:
-                 res[j] = (stop * (up**(niter - i - j)) * (down**j)) - strp
+            if res[j] < (spot * (up ** (niter - i - j)) * (down ** j)) - strp:
+                 res[j] = (spot * (up ** (niter - i - j)) * (down ** j)) - strp
     price = res[0]
     return price
 
 #Cette fonction calcule le prix d'un put american avec le modèle Binomial (sj equity)
-def put_price_binomial_american_model(stop, vol, rfr, lif, strp, niter):
+def put_price_binomial_american_model(spot, vol, rfr, lif, strp, niter):
     up = exp(vol*sqrt(lif/niter))
     down = 1/up
     prob = (exp(rfr*lif/niter)-down)/(up-down) #probabilité d'un mouvement de hausse
     prob_ = 1-prob #probabilité d'un mouvement de baisse
     res = []
     for i in range(niter+1): #Boucle qui stocke les valeurs finales de l'arbre binomial dans 'tableau'
-        res.append(stop*(down**i)*(up**(niter-i)))
+        res.append(spot * (down ** i) * (up ** (niter - i)))
         if res[i] > strp:
             res[i] = 0
         else:
@@ -286,13 +286,13 @@ def put_price_binomial_american_model(stop, vol, rfr, lif, strp, niter):
     for i in range(1,(niter+1)):
         for j in range((niter+1)-i):
             res[j] = exp((-rfr) * timeStep) * (prob * res[j] + prob_ * res[j+1])
-            if res[j] < strp - (stop * (up**(niter - i - j)) * (down ** j)):
-                 res[j] = strp - (stop * (up**(niter - i - j)) * (down ** j))
+            if res[j] < strp - (spot * (up ** (niter - i - j)) * (down ** j)):
+                 res[j] = strp - (spot * (up ** (niter - i - j)) * (down ** j))
     price = res[0]
     return price
 
 #Cette fonction calcule les greeks d'un call american avec le modèle Binomial (sj equity)
-def call_greeks_binomial_american_model(stop, vol, rfr, lif, strp, niter):
+def call_greeks_binomial_american_model(spot, vol, rfr, lif, strp, niter):
     vol2 = vol + 0.01
     rfr2 = rfr + 0.01
     up = exp(vol*sqrt(lif/niter))
@@ -301,7 +301,7 @@ def call_greeks_binomial_american_model(stop, vol, rfr, lif, strp, niter):
     prob_ = 1-prob #probabilité d'un mouvement de baisse
     res = []
     for i in range(niter+1): #Boucle qui stocke les valeurs finales de l'arbre binomial dans 'res'
-        res.append(stop*(down**i)*(up**(niter-i)))
+        res.append(spot * (down ** i) * (up ** (niter - i)))
         if res[i] < strp:
             res[i] = 0
         else:
@@ -313,7 +313,7 @@ def call_greeks_binomial_american_model(stop, vol, rfr, lif, strp, niter):
     prob_2 = 1-prob2 #probabilité d'un mouvement de baisse
     res2 = []
     for i in range(niter+1): #Boucle qui stocke les valeurs finales de l'arbre binomial dans 'res2'
-        res2.append(stop*(down2**i)*(up2**(niter-i)))
+        res2.append(spot * (down2 ** i) * (up2 ** (niter - i)))
         if res2[i] < strp:
             res2[i] = 0
         else:
@@ -329,8 +329,8 @@ def call_greeks_binomial_american_model(stop, vol, rfr, lif, strp, niter):
     for i in range(1,niter+1): #Boucle qui détermine le prix initial de l'option d'achat (backward-looking)
         for j in range(niter+1-i):
             res[j] = exp((-rfr)*timeStep)*(prob*res[j]+prob_*res[j+1])
-            if res[j] < (stop * (up ** (niter - i - j)) * (down ** j)) - strp:
-                 res[j] = (stop * (up ** (niter - i - j)) * (down ** j)) - strp
+            if res[j] < (spot * (up ** (niter - i - j)) * (down ** j)) - strp:
+                 res[j] = (spot * (up ** (niter - i - j)) * (down ** j)) - strp
             if i == niter - 1 and j == 0:
                 fu = res[0]
             elif i == niter - 1 and j == 1: 
@@ -342,20 +342,20 @@ def call_greeks_binomial_american_model(stop, vol, rfr, lif, strp, niter):
             elif i == niter - 2 and j == 2:
                 fdd = res[2]
             res2[j]=exp((-rfr) * timeStep) * (prob2 * res2[j] + prob_2 * res2[j + 1])
-            if res2[j] < (stop * (up ** (niter - i - j)) * (down ** j)) - strp:
-                 res2[j] = (stop * (up ** (niter - i - j)) * (down ** j)) - strp
+            if res2[j] < (spot * (up ** (niter - i - j)) * (down ** j)) - strp:
+                 res2[j] = (spot * (up ** (niter - i - j)) * (down ** j)) - strp
             res3[j]=exp((-rfr2) * timeStep) * (prob3 * res3[j] + prob_3 * res3[j + 1])
-            if res3[j] < (stop * (up ** (niter - i - j)) * (down ** j)) - strp:
-                 res3[j] = (stop * (up ** (niter - i - j)) * (down ** j)) - strp
-    delta = (fu - fd) / ((stop*up)-(stop*down))
-    gamma = (((fuu - fud) / (stop * up * up - stop * up * down)) - ((fud - fdd) / (stop * up * down - stop * down * down))) / ((stop * up * up - stop * down * down) / 2)
+            if res3[j] < (spot * (up ** (niter - i - j)) * (down ** j)) - strp:
+                 res3[j] = (spot * (up ** (niter - i - j)) * (down ** j)) - strp
+    delta = (fu - fd) / ((spot * up) - (spot * down))
+    gamma = (((fuu - fud) / (spot * up * up - spot * up * down)) - ((fud - fdd) / (spot * up * down - spot * down * down))) / ((spot * up * up - spot * down * down) / 2)
     vega = res2[0] - res[0]
     theta = (fud - res[0]) / (2 * lif * 365 / niter)
     rho = res3[0] - res[0]
     return delta, gamma, vega, theta, rho
 
 #Cette fonction calcule les greeks d'un put american avec le modèle Binomial (sj equity)
-def put_greeks_binomial_american_model(stop, vol, rfr, lif, strp, niter):
+def put_greeks_binomial_american_model(spot, vol, rfr, lif, strp, niter):
     vol2 = vol + 0.01
     rfr2 = rfr + 0.01
     up = exp(vol*sqrt(lif/niter))
@@ -364,7 +364,7 @@ def put_greeks_binomial_american_model(stop, vol, rfr, lif, strp, niter):
     prob_ = 1-prob #probabilité d'un mouvement de baisse
     res = []
     for i in range(niter+1): #Boucle qui stocke les valeurs finales de l'arbre binomial dans 'res'
-        res.append(stop*(down**i)*(up**(niter-i)))
+        res.append(spot * (down ** i) * (up ** (niter - i)))
         if res[i] > strp:
             res[i] = 0
         else:
@@ -376,7 +376,7 @@ def put_greeks_binomial_american_model(stop, vol, rfr, lif, strp, niter):
     prob_2 = 1-prob2 #probabilité d'un mouvement de baisse
     res2 = []
     for i in range(niter+1): #Boucle qui stocke les valeurs finales de l'arbre binomial dans 'res2'
-        res2.append(stop*(down2**i)*(up2**(niter-i)))
+        res2.append(spot * (down2 ** i) * (up2 ** (niter - i)))
         if res2[i] > strp:
             res2[i] = 0
         else:
@@ -392,8 +392,8 @@ def put_greeks_binomial_american_model(stop, vol, rfr, lif, strp, niter):
     for i in range(1,niter+1): #Boucle qui détermine le prix initial de l'option d'achat (backward-looking)
         for j in range(niter+1-i):
             res[j] = exp((-rfr) * timeStep) * (prob * res[j] + prob_ * res[j+1])
-            if res[j] < strp - (stop * (up**(niter - i - j)) * (down**j)):
-                 res[j] = strp - (stop * (up**(niter - i - j)) * (down**j))
+            if res[j] < strp - (spot * (up ** (niter - i - j)) * (down ** j)):
+                 res[j] = strp - (spot * (up ** (niter - i - j)) * (down ** j))
             if i == niter - 1 and j == 0:
                 fu = res[0]
             elif i == niter - 1 and j == 1: 
@@ -405,13 +405,13 @@ def put_greeks_binomial_american_model(stop, vol, rfr, lif, strp, niter):
             elif i == niter - 2 and j == 2:
                 fdd = res[2]
             res2[j]=exp((-rfr) * timeStep) * (prob2 * res2[j] + prob_2 * res2[j + 1])
-            if res2[j] < strp - (stop * (up**(niter - i - j)) * (down**j)):
-                 res2[j] = strp - (stop * (up**(niter - i - j)) * (down**j))
+            if res2[j] < strp - (spot * (up ** (niter - i - j)) * (down ** j)):
+                 res2[j] = strp - (spot * (up ** (niter - i - j)) * (down ** j))
             res3[j]=exp((-rfr2) * timeStep) * (prob3 * res3[j] + prob_3 * res3[j + 1])
-            if res3[j] < strp - (stop * (up**(niter - i - j)) * (down**j)):
-                 res3[j] = strp - (stop * (up**(niter - i - j)) * (down**j))
-    delta = (fu - fd) / ((stop*up)-(stop*down))
-    gamma = (((fuu - fud) / (stop * up * up - stop * up * down)) - ((fud - fdd) / (stop * up * down - stop * down * down))) / ((stop * up * up - stop * down * down) / 2)
+            if res3[j] < strp - (spot * (up ** (niter - i - j)) * (down ** j)):
+                 res3[j] = strp - (spot * (up ** (niter - i - j)) * (down ** j))
+    delta = (fu - fd) / ((spot * up) - (spot * down))
+    gamma = (((fuu - fud) / (spot * up * up - spot * up * down)) - ((fud - fdd) / (spot * up * down - spot * down * down))) / ((spot * up * up - spot * down * down) / 2)
     vega = res2[0] - res[0]
     theta = (fud - res[0]) / (2 * lif * 365 / niter)
     rho = res3[0] - res[0]
@@ -421,144 +421,122 @@ def put_greeks_binomial_american_model(stop, vol, rfr, lif, strp, niter):
 ########################################################################################### Asian model#######################################################################
 
 
-def callPriceAsian(v1, v2, v3, v4, v5, v6, v7):
-# Cette fonction calcule le prix d'une option d'achat asiatique
-#
-# INPUTS
-#----------------------------------------------------------------
-# v1 : prix au comptant
-# v2 : prix d'exercice
-# v3 : volatilité
-# v4 : taux d'intérêt sans risque
-# v5 : maturité
-# v6 : temps depuis la création de l'option
-# v7 : moyenne actuelle du cours du sous-jacent
-#
-# OUTPUT
-#----------------------------------------------------------------
-#
-# Prix de l'option d'achat asiatique
-#
-#----------------------------------------------------------------
+def callPriceAsian(spot, strp, vol, rfr, lif, avgt, avgs):
+    """Cette fonction calcule le prix d'une option d'achat asiatique
 
-   numberSteps = 50
-   numberSimulations = 500
+    INPUTS
+    ----------------------------------------------------------------
+    spot : prix au comptant
+    strp : prix d'exercice
+    vol : volatilité
+    rfr : taux d'intérêt sans risque
+    lif : maturité
+    avgt : temps depuis la création de l'option
+    avgs : moyenne actuelle du cours du sous-jacent"""
 
-   timeStep = (v5 - v6) / numberSteps
+    numberSteps = 50
+    numberSimulations = 500
+    timeStep = (lif - avgt) / numberSteps
 
 # Fixe le générateur de nombre aléatoire
-   randomSeed = 366
-   random.seed(randomSeed)
-   u = random.random()
+    randomSeed = 366
+    random.seed(randomSeed)
+    u = random.random()
 
-   tableauSpots = [[0] * (numberSteps+1) for _ in range(numberSimulations)]
+    tableauSpots = [[0] * (numberSteps+1) for _ in range(numberSimulations)]
 # Simulation de Monte Carlo sous l'hypothèse que le sous-jacent suit une distribution log-normale
-   for i in range (numberSimulations):
-       tableauSpots[i][0] = v1
-       for j in range(1, numberSteps+1):
-           u = random.random()
-           z = stats.norm.ppf(u, 0, 1)
-           tableauSpots[i][j] = tableauSpots[i][j-1] * exp((v4 - ((v3**2) / 2)) * timeStep + (v3 * sqrt(timeStep) * z))
-           u = random.random()
+    for i in range (numberSimulations):
+        tableauSpots[i][0] = spot
+        for j in range(1, numberSteps+1):
+            u = random.random()
+            z = stats.norm.ppf(u, 0, 1)
+            tableauSpots[i][j] = tableauSpots[i][j-1] * exp((rfr - ((vol ** 2) / 2)) * timeStep + (vol * sqrt(timeStep) * z))
+            u = random.random()
          
-   tableauResults = [0 * 1 for _ in range(numberSimulations)]
-   result = 0
-   for i in range(numberSimulations):
-      for j in range (numberSteps+1):
-          tableauResults[i] = tableauResults[i] + tableauSpots[i][j]
-      tableauResults[i] = ((v6 / v5) * v7) + (((v5 - v6) / v5) * (tableauResults[i] / numberSteps))
-      tableauResults[i] = max(0, tableauResults[i] - v2) * exp(-v4 * v5)
-      result = result + (tableauResults[i] / numberSimulations)
+    tableauResults = [0 * 1 for _ in range(numberSimulations)]
+    result = 0
+    for i in range(numberSimulations):
+        for j in range (numberSteps+1):
+            tableauResults[i] = tableauResults[i] + tableauSpots[i][j]
+        tableauResults[i] = ((avgt / lif) * avgs) + (((lif - avgt) / lif) * (tableauResults[i] / numberSteps))
+        tableauResults[i] = max(0, tableauResults[i] - strp) * exp(-rfr * lif)
+        result = result + (tableauResults[i] / numberSimulations)
       
-   return result
-  
+    return result
 
-def putPriceAsian(v1, v2, v3, v4, v5, v6, v7):
-# Cette fonction calcule le prix d'une option de vente asiatique
-#
-# INPUTS
-#----------------------------------------------------------------
-# v1 : prix au comptant
-# v2 : prix d'exercice
-# v3 : volatilité
-# v4 : taux d'intérêt sans risque
-# v5 : maturité
-# v6 : temps depuis la création de l'option
-# v7 : moyenne actuelle du cours du sous-jacent
-#
-# OUTPUT
-#----------------------------------------------------------------
-#
-# Prix de l'option de vente asiatique
-#
-#----------------------------------------------------------------
 
-   numberSteps = 50
-   numberSimulations = 500
+def putPriceAsian(spot, strp, vol, rfr, lif, avgt, avgs):
+    """Cette fonction calcule le prix d'une option de vente asiatique
 
-   timeStep = (v5 - v6) / numberSteps
+    INPUTS
+    ----------------------------------------------------------------
+    spot : prix au comptant
+    strp : prix d'exercice
+    vol : volatilité
+    rfr : taux d'intérêt sans risque
+    lif : maturité
+    avgt : temps depuis la création de l'option
+    avgs : moyenne actuelle du cours du sous-jacent"""
+
+    numberSteps = 50
+    numberSimulations = 500
+
+    timeStep = (lif - avgt) / numberSteps
 
 # Fixe le générateur de nombre aléatoire
-   randomSeed = 366
-   random.seed(randomSeed)
-   u = random.random()
+    randomSeed = 366
+    random.seed(randomSeed)
+    u = random.random()
 
-   tableauSpots = [[0] * (numberSteps+1) for _ in range(numberSimulations)]
+    tableauSpots = [[0] * (numberSteps+1) for _ in range(numberSimulations)]
 # Simulation de Monte Carlo sous l'hypothèse que le sous-jacent suit une distribution log-normale
-   for i in range (numberSimulations):
-       tableauSpots[i][0] = v1
-       for j in range(1, numberSteps+1):
-           u = random.random()
-           z = stats.norm.ppf(u, 0, 1)
-           tableauSpots[i][j] = tableauSpots[i][j-1] * exp((v4 - ((v3**2) / 2)) * timeStep + (v3 * sqrt(timeStep) * z))
-           u = random.random()
+    for i in range (numberSimulations):
+        tableauSpots[i][0] = spot
+        for j in range(1, numberSteps+1):
+            u = random.random()
+            z = stats.norm.ppf(u, 0, 1)
+            tableauSpots[i][j] = tableauSpots[i][j-1] * exp((rfr - ((vol ** 2) / 2)) * timeStep + (vol * sqrt(timeStep) * z))
+            u = random.random()
          
-   tableauResults = [0 * 1 for _ in range(numberSimulations)]
-   result = 0
-   for i in range(numberSimulations):
-      for j in range (numberSteps+1):
-          tableauResults[i] = tableauResults[i] + tableauSpots[i][j]
-      tableauResults[i] = ((v6 / v5) * v7) + (((v5 - v6) / v5) * (tableauResults[i] / numberSteps))
-      tableauResults[i] = max(0, v2 - tableauResults[i]) * exp(-v4 * v5)
-      result = result + (tableauResults[i] / numberSimulations)
+    tableauResults = [0 * 1 for _ in range(numberSimulations)]
+    result = 0
+    for i in range(numberSimulations):
+        for j in range (numberSteps+1):
+            tableauResults[i] = tableauResults[i] + tableauSpots[i][j]
+        tableauResults[i] = ((avgt / lif) * avgs) + (((lif - avgt) / lif) * (tableauResults[i] / numberSteps))
+        tableauResults[i] = max(0, strp - tableauResults[i]) * exp(-rfr * lif)
+        result = result + (tableauResults[i] / numberSimulations)
       
-   return result
+    return result
 
 
-def call_price_greeks_asian(spot, vol, rfr, life, strike, tsi, ca):
-# Cette fonction renvoie le prix et les greeks d'une option d'achat asiatique
-#
-# INPUTS
-#----------------------------------------------------------------
-# v1 : prix au comptant
-# v2 : volatilité
-# v3 : taux d'intérêt sans risque
-# v4 : maturité
-# v5 : prix d'exercice
-# v6 : temps depuis la création de l'option
-# v7 : moyenne actuelle du cours du sous-jacent
-#
-# OUTPUT
-#----------------------------------------------------------------
-#
-# Prix de l'option d'achat asiatique et ses grecques
-#
-#----------------------------------------------------------------
+def call_price_greeks_asian(spot, vol, rfr, lif, strp, avgt, avgs):
+    """Cette fonction calcule le prix et les grecques d'une option asiatique
+
+    INPUTS
+    ----------------------------------------------------------------
+    spot : prix au comptant
+    strp : prix d'exercice
+    vol : volatilité
+    rfr : taux d'intérêt sans risque
+    lif : maturité
+    avgt : temps depuis la création de l'option
+    avgs : moyenne actuelle du cours du sous-jacent"""
 
     spot2 = spot + 1 #spot augmentant de 1€
     spot3 = spot + 2 #spot augmentant de 2€
     vol2 = vol + 0.01 #volatilité augmentant de 1%
     rfr2 = rfr + 0.01 #taux snas risque augmentant de 1%
-    life2 = life * (364/365) #maturité moins 1 jour
-    tsi2 = tsi * (366/365) #temps écoulé depuis la création + 1 jour
-    ca2 = ca  #moyenne actuelle du cours en jour + 1
+    lif2 = lif * (364 / 365) #maturité moins 1 jour
+    avgt2 = avgt * (366 / 365) #temps écoulé depuis la création + 1 jour
+    avgs2 = avgs  #moyenne actuelle du cours en jour + 1
 
     #Prix du call au spot :
-    price = callPriceAsian(spot, strike, vol, rfr, life, tsi, ca)
+    price = callPriceAsian(spot, strp, vol, rfr, lif, avgt, avgs)
     #Prix du call au spot + 1 :
-    price2 = callPriceAsian(spot2, strike, vol, rfr, life, tsi, ca)
+    price2 = callPriceAsian(spot2, strp, vol, rfr, lif, avgt, avgs)
     #Prix du call au spot + 2 :
-    price3 = callPriceAsian(spot3, strike, vol, rfr, life, tsi, ca)
+    price3 = callPriceAsian(spot3, strp, vol, rfr, lif, avgt, avgs)
 
     #Delta du call au niveau du spot :
     delta = price2 - price
@@ -568,11 +546,11 @@ def call_price_greeks_asian(spot, vol, rfr, life, strike, tsi, ca):
     #Gamma
     gamma = delta2 - delta
     #Vega
-    vega = callPriceAsian(spot, strike, vol2, rfr, life, tsi, ca) - price
+    vega = callPriceAsian(spot, strp, vol2, rfr, lif, avgt, avgs) - price
     #Theta
-    theta = callPriceAsian(spot, strike, vol, rfr, life2, tsi2, ca2) - price
+    theta = callPriceAsian(spot, strp, vol, rfr, lif2, avgt2, avgs2) - price
     #Rho
-    rho = callPriceAsian(spot, strike, vol, rfr2, life, tsi, ca) - price
+    rho = callPriceAsian(spot, strp, vol, rfr2, lif, avgt, avgs) - price
 
     return price, delta, gamma, vega, theta, rho
 

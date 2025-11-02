@@ -206,7 +206,7 @@ class MonteCarloTab(_BaseTab):
         ttk.Label(self, text="Standard Error: ").grid(column = 2,row = 14,padx = 1,pady = 1)
 
     def set_input(self):
-        self.stop_tab2 = Entry(self).grid(column = 1,row = 2,padx = 1,pady = 1)
+        self.spot_tab2 = Entry(self).grid(column = 1, row = 2, padx = 1, pady = 1)
         self.rfr_tab2 = Entry(self).grid(column = 1,row = 3,padx = 1,pady = 1)
         self.divy_tab2 = Entry(self).grid(column = 1,row = 4,padx = 1,pady = 1)
         self.nts_tab2 = Entry(self).grid(column = 1,row = 7,padx = 1,pady = 1)

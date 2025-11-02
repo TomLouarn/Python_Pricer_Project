@@ -1,4 +1,4 @@
-# Interface graphique avec Tkinter------------------------------------------------------------------------------------------------------------------
+# Interface graphique avec Tkinter
 
 from tkinter import *
 from tkinter import ttk
@@ -41,6 +41,18 @@ if __name__ == '__main__':
     tab1.label_titre.grid(column=1, row=0, padx=20, pady=20)
 
     def callback_option_calculation():
+        """
+        ut = underlying type
+        spot = spot price
+        vol = volatilty
+        rfr = risk free-rate
+        ot = option type
+        lif = maturity
+        strp = strike price
+        valueRB = option rebate (yes or no)
+        valueCB = implied vol (yes or no)
+        """
+
         ut2 = tab1.ut.get()
         spot2 = tab1.spot.get()
         vol2 = tab1.vol.get() / 100
@@ -81,6 +93,20 @@ if __name__ == '__main__':
     tab2.label_titre.grid(columnspan=5, row=0, padx=20, pady=20)
 
     def callback_option_calculation_tab2():
+        """
+        ut = underlying type
+        spot = spot price
+        vol = volatilty
+        rfr = risk free-rate
+        ot = option type
+        lif = maturity
+        strp = strike price
+        valueRB = option rebate (yes or no)
+        divy = dividend yield
+        nts = number time steps
+        nos = number of simulations
+        rans = random seed
+        """
         ut2_tab2 = tab2.ut_tab2.get()
         spot2_tab2 = tab2.spot_tab2.get()
         vol2_tab2 = tab2.vol_tab2.get() / 100
