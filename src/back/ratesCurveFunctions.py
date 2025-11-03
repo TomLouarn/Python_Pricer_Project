@@ -21,11 +21,6 @@ def refreshCurve(data):
 # Les taux euros daily All, ester, eurib1, eurib3, eurib6, eurib12 de 1d à 50y
 #------------------------------------------------------------------------------
 
-#rajouter les jours en index dans mon tableau -> faire avec pandes ??????
-#enlever les weekends et les jours fériés -> utiliser le calendar TARGET?
-#faire un dictionnaire clé = date et index et valeur = taux
-
-
     dataRatesCurve = data.to_numpy()
     allemagne = dataRatesCurve[:,1]
     ester = dataRatesCurve[:,2]
@@ -77,8 +72,6 @@ def refreshCurve2(data):
 #------------------------------------------------------------------------------
 # Les taux euros daily ester, eurib1, eurib3, eurib6, eurib12 de 1d à 50y
 #------------------------------------------------------------------------------
-
-#j'ai sélectionné les business days -> vaudrait mieux avoir le calendrier target ? 
  
     dataRatesCurve = data.to_numpy()
     allemagne = dataRatesCurve[:,1]

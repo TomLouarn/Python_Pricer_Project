@@ -883,7 +883,7 @@ def callPriceBarrierDownAndOut(spot, vol, rfr, life, strike, step, barrier):
 
     return price
 
-def putPriceBarrierDownAndOut(spot, vol, rfr, life, strike, step, barrier):
+def putPriceBarrierDownAndOut(spot, vol, rfr, life, strp, step, barrier):
     #Cette fonction calcule le prix d'une option de vente Barrier Down And Out
 
     timeStep = life / step
@@ -925,8 +925,8 @@ def putPriceBarrierDownAndOut(spot, vol, rfr, life, strike, step, barrier):
     for i in range (2*step + 1):
         if (Stree[i] <= barrier):
             OptionValues[i][T] = 0
-        elif (Stree[i] - strike < 0):
-            OptionValues[i][T] = strike - Stree[i]
+        elif (Stree[i] - strp < 0):
+            OptionValues[i][T] = strp - Stree[i]
         else:
             OptionValues[i][T] = 0
 
@@ -947,7 +947,7 @@ def putPriceBarrierDownAndOut(spot, vol, rfr, life, strike, step, barrier):
 ########################################################################################### Barrière Down and In ############################################################################
 
 
-def call_price_greeks_barrier_down_and_in(spot, vol, rfr, lif, strike, barrier):
+def call_price_greeks_barrier_down_and_in(spot, vol, rfr, lif, strp, barrier):
     #step nombre d'itérations
     spot2 = spot + 1 #spot augmentant de 1€
     spot3 = spot + 2 #spot augmentant de 2€
@@ -955,19 +955,19 @@ def call_price_greeks_barrier_down_and_in(spot, vol, rfr, lif, strike, barrier):
     rfr2 = rfr + 0.01 #taux snas risque augmentant de 1%
     lif2 = lif * (364 / 365) #maturité moins 1 jour
     #Prix du call au spot :
-    price = callPriceBarrierDownAndIn(spot, vol, rfr, lif, strike, barrier)
+    price = callPriceBarrierDownAndIn(spot, vol, rfr, lif, strp, barrier)
     #Prix du call au spot + 1 :
-    price2 = callPriceBarrierDownAndIn(spot2, vol, rfr, lif, strike, barrier)
+    price2 = callPriceBarrierDownAndIn(spot2, vol, rfr, lif, strp, barrier)
     #Prix du call au spot + 2 :
-    price3 = callPriceBarrierDownAndIn(spot3, vol, rfr, lif, strike, barrier)
+    price3 = callPriceBarrierDownAndIn(spot3, vol, rfr, lif, strp, barrier)
     delta = price2 - price
     gamma = (price3-price2)-(price2-price)
-    vega = callPriceBarrierDownAndIn(spot, vol2, rfr, lif, strike, barrier) - price
-    theta = callPriceBarrierDownAndIn(spot, vol, rfr, lif2, strike, barrier) - price
-    rho = callPriceBarrierDownAndIn(spot, vol, rfr2, lif, strike, barrier) - price
+    vega = callPriceBarrierDownAndIn(spot, vol2, rfr, lif, strp, barrier) - price
+    theta = callPriceBarrierDownAndIn(spot, vol, rfr, lif2, strp, barrier) - price
+    rho = callPriceBarrierDownAndIn(spot, vol, rfr2, lif, strp, barrier) - price
     return price, delta, gamma, vega, theta, rho
 
-def put_price_greeks_barrier_down_and_in(spot, vol, rfr, lif, strike, barrier):
+def put_price_greeks_barrier_down_and_in(spot, vol, rfr, lif, strp, barrier):
     #step nombre d'itérations
     spot2 = spot + 1 #spot augmentant de 1€
     spot3 = spot + 2 #spot augmentant de 2€
@@ -975,16 +975,16 @@ def put_price_greeks_barrier_down_and_in(spot, vol, rfr, lif, strike, barrier):
     rfr2 = rfr + 0.01 #taux snas risque augmentant de 1%
     lif2 = lif * (364 / 365) #maturité moins 1 jour
     #Prix du call au spot :
-    price = putPriceBarrierDownAndIn(spot, vol, rfr, lif, strike, barrier)
+    price = putPriceBarrierDownAndIn(spot, vol, rfr, lif, strp, barrier)
     #Prix du call au spot + 1 :
-    price2 = putPriceBarrierDownAndIn(spot2, vol, rfr, lif, strike, barrier)
+    price2 = putPriceBarrierDownAndIn(spot2, vol, rfr, lif, strp, barrier)
     #Prix du call au spot + 2 :
-    price3 = putPriceBarrierDownAndIn(spot3, vol, rfr, lif, strike, barrier)
+    price3 = putPriceBarrierDownAndIn(spot3, vol, rfr, lif, strp, barrier)
     delta = price2 - price
     gamma = (price3-price2)-(price2-price)
-    vega = putPriceBarrierDownAndIn(spot, vol2, rfr, lif, strike, barrier) - price
-    theta = putPriceBarrierDownAndIn(spot, vol, rfr, lif2, strike, barrier) - price
-    rho = putPriceBarrierDownAndIn(spot, vol, rfr2, lif, strike, barrier) - price
+    vega = putPriceBarrierDownAndIn(spot, vol2, rfr, lif, strp, barrier) - price
+    theta = putPriceBarrierDownAndIn(spot, vol, rfr, lif2, strp, barrier) - price
+    rho = putPriceBarrierDownAndIn(spot, vol, rfr2, lif, strp, barrier) - price
     return price, delta, gamma, vega, theta, rho
 
 def callPriceBarrierDownAndIn(spot, vol, rfr, lif, strike, barrier):
@@ -1001,18 +1001,18 @@ def callPriceBarrierDownAndIn(spot, vol, rfr, lif, strike, barrier):
     return price
 
 
-def putPriceBarrierDownAndIn(spot, vol, rfr, life, strike, barrier):
+def putPriceBarrierDownAndIn(spot, vol, rfr, life, strp, barrier):
     #Cette fonction calcule le prix d'une option de vente Barrier Down And In
 
     lam = (rfr + ((vol**2) / 2)) / (vol**2)
-    y = log((barrier**2) / (spot*strike)) / (vol*sqrt(life)) + lam * vol * sqrt(life)
+    y = log((barrier**2) / (spot * strp)) / (vol * sqrt(life)) + lam * vol * sqrt(life)
     x1 = log(spot/barrier) / (vol*sqrt(life)) + (lam*vol*sqrt(life))
     y1 = log(barrier/spot) / (vol*sqrt(life)) + (lam*vol*sqrt(life))
 
     a = (-spot) * stats.norm.cdf(-x1, 0, 1)
-    b = (strike * exp(-rfr*life)) * stats.norm.cdf(-x1 + (vol * sqrt(life)), 0, 1)
+    b = (strp * exp(-rfr * life)) * stats.norm.cdf(-x1 + (vol * sqrt(life)), 0, 1)
     c = spot * ((barrier/spot)**(2*lam)) * (stats.norm.cdf(y, 0, 1) - stats.norm.cdf(y1, 0, 1))
-    d = (-strike*exp(-rfr*life)) * ((barrier/spot)**(2*lam - 2)) * (stats.norm.cdf(y - (vol * sqrt(life)), 0, 1) - stats.norm.cdf(y1 - (vol * sqrt(life)), 0, 1))
+    d = (-strp * exp(-rfr * life)) * ((barrier / spot) ** (2 * lam - 2)) * (stats.norm.cdf(y - (vol * sqrt(life)), 0, 1) - stats.norm.cdf(y1 - (vol * sqrt(life)), 0, 1))
 
     price = a + b + c + d
 
@@ -1044,10 +1044,10 @@ def putPriceBinaryCashOrNothing(spot, strp, vol, rfr, lif, cash):
     return price
 
 
-def call_Binary_Cash_Or_Nothing_model(spot, vol, rfr, life, strike, cash):
+def call_Binary_Cash_Or_Nothing_model(spot, vol, rfr, life, strp, cash):
     # Cette fonction calcule le prix et les greeks d'une option d'achat Binary Cash Or Nothing
 
-    d1 = ((log(spot / strike)) + ((rfr + ((vol**2) / 2)) * life)) / (vol * sqrt(life))
+    d1 = ((log(spot / strp)) + ((rfr + ((vol ** 2) / 2)) * life)) / (vol * sqrt(life))
     d2 = d1 - (vol * sqrt(life))
 
     Pi = pi #nombre Pi
@@ -1056,98 +1056,98 @@ def call_Binary_Cash_Or_Nothing_model(spot, vol, rfr, life, strike, cash):
     cdf2 = stats.norm.cdf(d2, 0, 1) #fonction de répartition de la loi normale
 
     price = exp(-(rfr * life)) * cdf2 * cash #price
-    delta = ((spot / strike) * (phi1 / (spot * vol * sqrt(life)))) * cash #delta
-    gamma = (-((phi1 / (spot * vol * sqrt(life))) / strike) * (d1 / (vol * sqrt(life)))) * cash #gamma
+    delta = ((spot / strp) * (phi1 / (spot * vol * sqrt(life)))) * cash #delta
+    gamma = (-((phi1 / (spot * vol * sqrt(life))) / strp) * (d1 / (vol * sqrt(life)))) * cash #gamma
     #Vega
     vol2 = vol + 0.01 #Lorsque la volatilité augmente de 1%
-    d1Vol = ((log(spot / strike)) + ((rfr + ((vol2**2) / 2)) * life)) / (vol2 * sqrt(life))
+    d1Vol = ((log(spot / strp)) + ((rfr + ((vol2 ** 2) / 2)) * life)) / (vol2 * sqrt(life))
     d2Vol = d1Vol - (vol2 * sqrt(life))
     cdf2Vol = stats.norm.cdf(d2Vol, 0, 1)
     vega = (exp(-(rfr * life)) * cdf2Vol * cash) - (exp(-(rfr * life)) * cdf2 * cash)
     #Theta
     life2 = life * 0.99726027 #Maturité - 1 jour
-    d1life = ((log(spot / strike)) + ((rfr + ((vol**2) / 2)) * life2)) / (vol * sqrt(life2))
+    d1life = ((log(spot / strp)) + ((rfr + ((vol ** 2) / 2)) * life2)) / (vol * sqrt(life2))
     d2life = d1life - (vol * sqrt(life2))
     cdf2life = stats.norm.cdf(d2life, 0, 1)
     theta = (exp(-(rfr * life2)) * cdf2life * cash) - (exp(-(rfr * life)) * cdf2 * cash)
     #Rho
     rfr2 = rfr + 0.01 #Lorsque le taux sans risque augmente de 1%
-    d1RFR = ((log(spot / strike)) + ((rfr2 + ((vol**2) / 2)) * life)) / (vol * sqrt(life))
+    d1RFR = ((log(spot / strp)) + ((rfr2 + ((vol ** 2) / 2)) * life)) / (vol * sqrt(life))
     d2RFR = d1RFR - (vol * sqrt(life))
     cdf2RFR = stats.norm.cdf(d2RFR, 0, 1)
     rho = (exp(-(rfr2 * life)) * cdf2RFR * cash) - (exp(-(rfr * life)) * cdf2 * cash)
 
     return price, delta, gamma, vega, theta, rho
 
-def put_Binary_Cash_Or_Nothing_model(spot, vol, rfr, life, strike, cash):
+def put_Binary_Cash_Or_Nothing_model(spot, vol, rfr, lif, strp, cash):
     # Cette fonction calcule le prix et les greeks d'une option de vente Binary Cash Or Nothing
 
-    d1 = ((log(spot / strike)) + ((rfr + ((vol**2) / 2)) * life)) / (vol * sqrt(life))
-    d2 = d1 - (vol * sqrt(life))
+    d1 = ((log(spot / strp)) + ((rfr + ((vol ** 2) / 2)) * lif)) / (vol * sqrt(lif))
+    d2 = d1 - (vol * sqrt(lif))
 
     Pi = pi #nombre Pi
     phi1 = exp(-(d1**2 / 2)) / sqrt(2 * Pi)
 
     cdf2 = stats.norm.cdf(d2, 0, 1) #fonction de répartition de la loi normale
 
-    price = exp(-(rfr * life)) * (1-cdf2) * cash #price
-    delta = (-(spot / strike)) * (phi1 / (spot * vol * sqrt(life))) * cash #delta
-    gamma = (((phi1 / (spot * vol * sqrt(life))) / strike) * (d1 / (vol * sqrt(life)))) * cash #gamma
+    price = exp(-(rfr * lif)) * (1 - cdf2) * cash #price
+    delta = (-(spot / strp)) * (phi1 / (spot * vol * sqrt(lif))) * cash #delta
+    gamma = (((phi1 / (spot * vol * sqrt(lif))) / strp) * (d1 / (vol * sqrt(lif)))) * cash #gamma
     #Vega
     vol2 = vol + 0.01 #Lorsque la volatilité augmente de 1%
-    d1Vol = ((log(spot / strike)) + ((rfr + ((vol2**2) / 2)) * life)) / (vol2 * sqrt(life))
-    d2Vol = d1Vol - (vol2 * sqrt(life))
+    d1Vol = ((log(spot / strp)) + ((rfr + ((vol2 ** 2) / 2)) * lif)) / (vol2 * sqrt(lif))
+    d2Vol = d1Vol - (vol2 * sqrt(lif))
     cdf2Vol = stats.norm.cdf(d2Vol, 0, 1)
-    vega = (exp(-(rfr * life)) * (1-cdf2Vol) * cash) - (exp(-(rfr * life)) * (1-cdf2) * cash)
+    vega = (exp(-(rfr * lif)) * (1 - cdf2Vol) * cash) - (exp(-(rfr * lif)) * (1 - cdf2) * cash)
     #Theta
-    life2 = life * 0.99726027 #Maturité - 1 jour
-    d1life = ((log(spot / strike)) + ((rfr + ((vol**2) / 2)) * life2)) / (vol * sqrt(life2))
+    life2 = lif * 0.99726027 #Maturité - 1 jour
+    d1life = ((log(spot / strp)) + ((rfr + ((vol ** 2) / 2)) * life2)) / (vol * sqrt(life2))
     d2life = d1life - (vol * sqrt(life2))
     cdf2life = stats.norm.cdf(d2life, 0, 1)
-    theta = (exp(-(rfr * life2)) * (1-cdf2life) * cash) - (exp(-(rfr * life)) * (1-cdf2) * cash)
+    theta = (exp(-(rfr * life2)) * (1-cdf2life) * cash) - (exp(-(rfr * lif)) * (1 - cdf2) * cash)
     #Rho
     rfr2 = rfr + 0.01 #Lorsque le taux sans risque augmente de 1%
-    d1RFR = ((log(spot / strike)) + ((rfr2 + ((vol**2) / 2)) * life)) / (vol * sqrt(life))
-    d2RFR = d1RFR - (vol * sqrt(life))
+    d1RFR = ((log(spot / strp)) + ((rfr2 + ((vol ** 2) / 2)) * lif)) / (vol * sqrt(lif))
+    d2RFR = d1RFR - (vol * sqrt(lif))
     cdf2RFR = stats.norm.cdf(d2RFR, 0, 1)
-    rho = (exp(-(rfr2 * life)) * (1-cdf2RFR) * cash) - (exp(-(rfr * life)) * (1-cdf2) * cash)
+    rho = (exp(-(rfr2 * lif)) * (1 - cdf2RFR) * cash) - (exp(-(rfr * lif)) * (1 - cdf2) * cash)
 
     return price, delta, gamma, vega, theta, rho
 
 
 ################################################################################ Binary Asset or Nothing ####################################################################################
 
-def call_Binary_Asset_Or_Nothing_model(spot, vol, rfr, life, strike):
+def call_Binary_Asset_Or_Nothing_model(spot, vol, rfr, lif, strp):
     spot2 = spot+1
     spot3 = spot+2
     vol2 = vol+0.01
     rfr2 = rfr+0.01
-    life2=life*(364/365)
-    price = sum(call_price_BS_model(spot, vol, rfr, life, strike) + list([callPriceBinaryCashOrNothing(spot, strike, vol, rfr, life, strike)])) #prix du call au spot
-    price2 =sum(call_price_BS_model(spot2, vol, rfr, life, strike) + list([callPriceBinaryCashOrNothing(spot2, strike, vol, rfr, life, strike)]))#prix du call au spot + 1
-    price3 = sum(call_price_BS_model(spot3, vol, rfr, life, strike) + list([callPriceBinaryCashOrNothing(spot3, strike, vol, rfr, life, strike)])) #prix du call au spot + 2
+    life2= lif * (364 / 365)
+    price = sum(call_price_BS_model(spot, vol, rfr, lif, strp) + list([callPriceBinaryCashOrNothing(spot, strp, vol, rfr, lif, strp)])) #prix du call au spot
+    price2 =sum(call_price_BS_model(spot2, vol, rfr, lif, strp) + list([callPriceBinaryCashOrNothing(spot2, strp, vol, rfr, lif, strp)]))#prix du call au spot + 1
+    price3 = sum(call_price_BS_model(spot3, vol, rfr, lif, strp) + list([callPriceBinaryCashOrNothing(spot3, strp, vol, rfr, lif, strp)])) #prix du call au spot + 2
     delta = price2 - price #delta du call au niveau du spot
     delta2 = price3 - price2 #delta du call au niveau du spot + 1
     gamma = delta2-delta #gamma
-    vega = sum(-price + call_price_BS_model(spot, vol2, rfr, life, strike) + list([callPriceBinaryCashOrNothing(spot, strike, vol2, rfr, life, strike)])) #vega
-    theta = sum(-price + call_price_BS_model(spot, vol, rfr, life2, strike) + list([callPriceBinaryCashOrNothing(spot, strike, vol, rfr, life2, strike)])) #theta
-    rho = sum(-price + call_price_BS_model(spot, vol, rfr2, life, strike) + list([callPriceBinaryCashOrNothing(spot, strike, vol, rfr2, life, strike)])) #rho
+    vega = sum(-price + call_price_BS_model(spot, vol2, rfr, lif, strp) + list([callPriceBinaryCashOrNothing(spot, strp, vol2, rfr, lif, strp)])) #vega
+    theta = sum(-price + call_price_BS_model(spot, vol, rfr, life2, strp) + list([callPriceBinaryCashOrNothing(spot, strp, vol, rfr, life2, strp)])) #theta
+    rho = sum(-price + call_price_BS_model(spot, vol, rfr2, lif, strp) + list([callPriceBinaryCashOrNothing(spot, strp, vol, rfr2, lif, strp)])) #rho
     return price, delta, gamma, vega, theta, rho
 
-def put_Binary_Asset_Or_Nothing_model(spot, vol, rfr, life, strike):
+def put_Binary_Asset_Or_Nothing_model(spot, vol, rfr, lif, strp):
     spot2 = spot+1
     spot3 = spot+2
     vol2 = vol+0.01
     rfr2 = rfr+0.01
-    life2=life*(364/365)
-    price = sum(put_price_BS_model(spot, vol, rfr, life, strike) + list([putPriceBinaryCashOrNothing(spot, strike, vol, rfr, life, strike)])) #prix du call au spot
-    price2 =sum(put_price_BS_model(spot2, vol, rfr, life, strike) + list([putPriceBinaryCashOrNothing(spot2, strike, vol, rfr, life, strike)]))#prix du call au spot + 1
-    price3 = sum(put_price_BS_model(spot3, vol, rfr, life, strike) + list([putPriceBinaryCashOrNothing(spot3, strike, vol, rfr, life, strike)])) #prix du call au spot + 2
+    life2= lif * (364 / 365)
+    price = sum(put_price_BS_model(spot, vol, rfr, lif, strp) + list([putPriceBinaryCashOrNothing(spot, strp, vol, rfr, lif, strp)])) #prix du call au spot
+    price2 =sum(put_price_BS_model(spot2, vol, rfr, lif, strp) + list([putPriceBinaryCashOrNothing(spot2, strp, vol, rfr, lif, strp)]))#prix du call au spot + 1
+    price3 = sum(put_price_BS_model(spot3, vol, rfr, lif, strp) + list([putPriceBinaryCashOrNothing(spot3, strp, vol, rfr, lif, strp)])) #prix du call au spot + 2
     delta = price2 - price #delta du call au niveau du spot
     delta2 = price3 - price2 #delta du call au niveau du spot + 1
     gamma = delta2-delta #gamma
-    vega = sum(-price + put_price_BS_model(spot, vol2, rfr, life, strike) + list([putPriceBinaryCashOrNothing(spot, strike, vol2, rfr, life, strike)])) #vega
-    theta = sum(-price + put_price_BS_model(spot, vol, rfr, life2, strike) + list([putPriceBinaryCashOrNothing(spot, strike, vol, rfr, life2, strike)])) #theta
-    rho = sum(-price + put_price_BS_model(spot, vol, rfr2, life, strike) + list([putPriceBinaryCashOrNothing(spot, strike, vol, rfr2, life, strike)])) #rho
+    vega = sum(-price + put_price_BS_model(spot, vol2, rfr, lif, strp) + list([putPriceBinaryCashOrNothing(spot, strp, vol2, rfr, lif, strp)])) #vega
+    theta = sum(-price + put_price_BS_model(spot, vol, rfr, life2, strp) + list([putPriceBinaryCashOrNothing(spot, strp, vol, rfr, life2, strp)])) #theta
+    rho = sum(-price + put_price_BS_model(spot, vol, rfr2, lif, strp) + list([putPriceBinaryCashOrNothing(spot, strp, vol, rfr2, lif, strp)])) #rho
     return price, delta, gamma, vega, theta, rho
 

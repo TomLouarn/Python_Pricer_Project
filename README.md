@@ -16,6 +16,25 @@ Le dossier `src/back` contient `pricer.py`, `equityOptionFunctions.py`, `currenc
   - `choix_conception.md` : rapport académique détaillant la refonte, les choix de conception et les justifications théoriques.
   - `README.md` (ce fichier) : guide de prise en main et de structure.
 
+## Les principaux inputs
+
+- **spot** : prix au comptant
+- **strp** : prix d'exercice
+- **vol** : volatilité
+- **rfr** : taux d'intérêt sans risque
+- **lif** : maturité
+- **divy** : rendement des dividendes
+- **nts** : nombre d'itérations (pour Monte Carlo)
+- **nos** : nombre de simulatons (pour Monte Carlo)
+- **rans** : fixation de l'aléa (pour Monte Carlo, 42 par habitude)
+- **fja** : fréquence de saut par an (pour Monte Carlo via Merton)
+- **avgm** : moyenne des mouvements liée au saut (Merton)
+- **jvol** : volatilité liée au saut (Merton)
+- **avgt** : temps depuis la création de l'option (pour les options asiatiques)
+- **avgs** : moyenne actuelle du cours du sous-jacent (pour les options asiatiques)
+- **barrier** : barrière (pour les options barrières)
+- **cash** : cash (pour les options cash or nothing)
+
 ## Installation
 
 1. Cloner le dépôt :
