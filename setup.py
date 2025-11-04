@@ -2,10 +2,9 @@
 Script d'installation pour le package pricer.
 
 Ce `setup.py` définit le package à partir du sous-dossier `src` afin de
-respecter la convention de packaging où le code source est
-séparé du reste du dépôt.  Le back‑end (`pricer`) est
-déclaré comme package principal.  Les modules hérités et le front‑end
-ne sont pas installés par défaut car ils servent surtout à des fins
+respecter la convention de packaging où le code source est séparé du
+reste du dépôt.  Le back‑end (`pricer`) est déclaré comme package principal.
+Le front‑end n'est pas installé par défaut car il sert surtout à des fins
 éducatives ou de démonstration.
 """
 

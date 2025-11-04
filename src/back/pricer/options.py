@@ -47,10 +47,7 @@ class BaseOption:
             self.rate,
             self.dividend_yield,
         )
-        d1 = (
-            math.log(s / k)
-            + (r - q + 0.5 * sigma**2) * t
-        ) / (sigma * math.sqrt(t))
+        d1 = (math.log(s / k) + (r - q + 0.5 * sigma**2) * t) / (sigma * math.sqrt(t))
         d2 = d1 - sigma * math.sqrt(t)
         return d1, d2
 

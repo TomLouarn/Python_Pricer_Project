@@ -21,6 +21,10 @@ class FixedRateBond:
     frequency: str
     curve: pd.DataFrame
     def _payment_schedule(self) -> pd.DataFrame:
+        """
+        construit les périodes, les dates de coupons (week-end -> lundi),
+        calcule le coupon et le temps jusqu'au paiement
+        """
         freq_to_months = {
             "Annual": 12,
             "Semi-Annual": 6,
@@ -47,7 +51,12 @@ class FixedRateBond:
         today = datetime.today().date()
         df['daycount'] = (df['payment'] - today).dt.days.clip(lower=0)
         return df
+
     def price(self) -> float:
+        """
+        somme des flux actualisés avec des zéros en %
+        renvoie un prix en % du nominal
+        """
         schedule = self._payment_schedule()
         zeros = []
         for dt in schedule['payment']:
@@ -64,7 +73,11 @@ class FixedRateBond:
         schedule['pv'] = schedule['coupon'] * schedule['discount']
         price_pct = 100 * schedule['pv'].sum() / self.principal
         return float(price_pct)
+
     def ytm(self) -> float:
+        """
+        calcule l'IRR des flux en % du nominal et annualise
+        """
         schedule = self._payment_schedule()
         flows = 100 * schedule['coupon'] / self.principal
         flows = flows.tolist()
@@ -78,7 +91,11 @@ class FixedRateBond:
         }[self.frequency]
         irr = npf.irr(flows)
         return float(irr * freq * 100)
+
     def duration(self) -> Tuple[float, float]:
+        """
+        calcule de la Macaulay et Modified Macaulay duration
+        sur la base des PV"""
         schedule = self._payment_schedule()
         pv = []
         t = []
@@ -102,7 +119,11 @@ class FixedRateBond:
         macaulay = (pv * t).sum() / (price_pct / 100 * self.principal)
         modified = macaulay / (1 + self.ytm() / 100 / freq)
         return float(macaulay), float(modified)
+
     def convexity(self) -> float:
+        """
+        calcul de la convexité de l'obligation, somme pondérée des t^2/prix
+        """
         schedule = self._payment_schedule()
         freq = {
             "Annual": 1,
@@ -124,7 +145,11 @@ class FixedRateBond:
             convex.append(pv_i * t**2)
         price_pct = 100 * sum(pv) / self.principal
         return float(sum(convex) / (price_pct / 100 * self.principal))
+
     def dv01(self) -> float:
+        """
+        variation de prix en % pour +1 bp
+        """
         price_base = self.price()
         bump = 0.0001
         bumped_curve = self.curve.copy()

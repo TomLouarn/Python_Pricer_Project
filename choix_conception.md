@@ -29,7 +29,7 @@ pricer/
 ├── swaps.py          # Swaps de taux et DV01
 ├── rates.py          # Courbe de taux zéro (interpolation, discounting)
 └── monte_carlo.py    # Générateur Monte Carlo générique
-refonte_report.md     # présent document
+choix_conceptio.md     # présent document
 ```
 
 ## 2. Utilisation de `dataclasses` et `Enum`
@@ -180,7 +180,7 @@ complexes.
 
 ## 10. Prochaines étapes
 
-Cette refonte offre une base solide mais perfectible :
+Ce projet offre une base solide mais perfectible :
 
 - Ajouter des tests unitaires (via `pytest`) pour valider chaque
   instrument et garantir l’exactitude des formules.
@@ -193,5 +193,5 @@ Cette refonte offre une base solide mais perfectible :
   `pyproject.toml`) et rédiger un README.md avec des exemples
   d’utilisation pour chaque module.
 - Réaliser un front‑end moderne (ex. Streamlit) utilisant ce
-  package, illustrant votre maîtrise des stacks back/front.
+  package.
   
