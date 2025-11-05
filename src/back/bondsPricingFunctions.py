@@ -1,32 +1,30 @@
 import numpy_financial as npf
 import pandas as pd
-
 from pandas.tseries.offsets import DateOffset
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 
 def bond_calculation(principal,couponRate,settF,cpnDate,dataRatesCurve):
-# Cette fonction calcule le prix, le YTM, la duration, la duration modifiée et la convexité d'un bond
-#
-# INPUTS
-#------------------------------------------------------------------------------
-# principal       : principal du bond
-# couponRate      : le coupon du bond en pourcentage
-# settF           : la fréquence du détachement des coupons
-# cpnDate         : la date du dernier détachement de coupon
-# dataRatesCurve  : matrice de taux
-#------------------------------------------------------------------------------
-# OUTPUTS
-#------------------------------------------------------------------------------
-# prix             : prix du bond en pourcentage du nominal 
-# YTM              : yield to maturity (Taux Rendement Actuariel)
-# macDuration      : duration Macaulay
-# modDuration      : modified duration
-# conv             : convexity
-# sensi            : sensibilité du bond (modDuration + conv) si shift d'un bp
-# fluxBond         : flux du bond
-#------------------------------------------------------------------------------
+    """
+    Cette fonction calcule le prix, le YTM, la duration, la duration modifiée et la convexité d'un bond
+
+    PARAMETERS :
+        principal       : principal du bond
+        couponRate      : le coupon du bond en pourcentage
+        settF           : la fréquence du détachement des coupons
+        cpnDate         : la date du dernier détachement de coupon
+        dataRatesCurve  : matrice de taux
+
+    OUTPUTS :
+        prix             : prix du bond en pourcentage du nominal
+        YTM              : yield to maturity (Taux Rendement Actuariel)
+        macDuration      : duration Macaulay
+        modDuration      : modified duration
+        conv             : convexity
+        sensi            : sensibilité du bond (modDuration + conv) si shift d'un bp
+        fluxBond         : flux du bond
+    """
 
     #Ajustement du format des dates:
     startDate = datetime.today()

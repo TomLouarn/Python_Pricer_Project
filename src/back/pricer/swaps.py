@@ -45,6 +45,7 @@ class InterestRateSwap:
                 d += timedelta(days=1)
             adjusted.append(d)
         return pd.DatetimeIndex(adjusted)
+
     def _payment_matrix(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         fixed_dates = self._generate_dates(self.freq_fixed)
         float_dates = self._generate_dates(self.freq_float)
@@ -69,6 +70,7 @@ class InterestRateSwap:
         df_float['forward_rate'] = np.array(forwards) + self.float_spread
         df_float['notional'] = self.notional_float
         return df_fixed, df_float
+
     def price(self) -> float:
         df_fixed, df_float = self._payment_matrix()
         pv_fixed = 0.0
@@ -79,7 +81,8 @@ class InterestRateSwap:
         for _, row in df_float.iterrows():
             disc = self.curve.discount_factor(row['payment'].strftime('%Y-%m-%d'))
             pv_float += -row['notional'] * row['forward_rate'] / 100 * row['year_frac'] * disc
-        return pv_fixed + pv_float
+        return (pv_fixed - pv_float) if self.pay_fixed else (pv_float - pv_fixed)
+
     def dv01(self) -> float:
         base_price = self.price()
         bump = 0.0001

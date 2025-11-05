@@ -38,9 +38,8 @@ class ZeroCurve:
     def discount_factor(self, target_date: str) -> float:
         """Facteur d'actualisation pour la date cible (act/365).
 
-        On suppose que la courbe fournit des taux annuels en %.  Le
-        facteur d'actualisation est exp(−r × t), où t est le temps en
-        années jusqu'à la date cible.
+        La courbe fournit des taux annuels en %.  Le facteur d'actualisation
+        est exp(−r × t), où t est le temps en années jusqu'à la date cible.
         """
         dates = pd.to_datetime(self.data.index)
         start = dates[0]
