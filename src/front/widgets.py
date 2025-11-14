@@ -1,6 +1,5 @@
 from tkinter import StringVar, DoubleVar, IntVar
 from tkinter import ttk
-import pandas as pd
 
 
 class Label(ttk.Label):

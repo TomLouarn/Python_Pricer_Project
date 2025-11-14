@@ -1,4 +1,4 @@
-from math import *
+from math import log, sqrt, exp
 from scipy import stats
 
 #Cette fonction calcule le prix et les greeks pour une call européenne avec le modèle de Black et Scholes (sj index)

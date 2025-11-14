@@ -1,7 +1,6 @@
 # Interface graphique avec Tkinter
 
-from tkinter import *
-from tkinter import ttk
+from tkinter import Tk, ttk
 import matplotlib
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt

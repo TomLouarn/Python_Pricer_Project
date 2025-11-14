@@ -6,7 +6,6 @@ from src.back.futuresOptionFunctions import *
 
 #Tab2
 from src.back.monteCarloFunctions import *
-import matplotlib.pyplot as plt
 from tkinter import messagebox
 
 #Tab3

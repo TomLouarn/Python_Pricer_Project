@@ -1,4 +1,4 @@
-from math import *
+from math import log, exp, sqrt, pi
 from scipy import stats
 import random
 

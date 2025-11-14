@@ -1,5 +1,3 @@
-""" Tabs objects. """
-
 from tkinter import StringVar
 from tkinter import ttk
 

@@ -1,7 +1,7 @@
 from scipy import stats
 import statistics
 import random
-from math import *
+from math import sqrt, exp
 
 
 def monteCarloEuropeanLogNormalCall(spot, vol, rfr, lif, strp, divy, nts, nos, rans):
